@@ -10,9 +10,8 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Margin="20,0,0,0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                            <Label Text="{Binding Id}" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand" />
-                            <Image Source="check.png" HorizontalOptions="End" IsVisible="{Binding Done}" />
+                        <StackLayout Margin="20,10,0,10" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                            <Label Text="{Binding CityName}" FontSize="18" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand" />
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

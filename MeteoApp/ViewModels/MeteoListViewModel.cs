@@ -18,17 +18,15 @@ namespace MeteoApp
 
         public MeteoListViewModel()
         {
-            Entries = [];
-
-            for (var i = 0; i < 15; i++)
+            Entries = new ObservableCollection<Entry>
             {
-                var e = new Entry
-                {
-                    Id = i
-                };
-
-                Entries.Add(e);
-            }
+                new Entry { CityName = "Roma" },
+                new Entry { CityName = "Milano" },
+                new Entry { CityName = "Napoli" },
+                new Entry { CityName = "Torino" },
+                new Entry { CityName = "Palermo" },
+                new Entry { CityName = "Lugano" }
+            };
         }
     }
 }
