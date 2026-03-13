@@ -43,7 +43,6 @@ public partial class MeteoListPage : Shell
 
     private async Task ShowPrompt()
     {
-        // Chiediamo all'utente la località tramite un popup 
         string result = await DisplayPromptAsync("Aggiungi Città", "Inserisci il nome della località:");
         
         if (!string.IsNullOrWhiteSpace(result))
@@ -53,7 +52,6 @@ public partial class MeteoListPage : Shell
                 Name = result.Trim()
             };
 
-            // Aggiungiamo il nuovo elemento alla ObservableCollection
             if (BindingContext is MeteoListViewModel vm)
             {
                 vm.Entries.Add(newEntry);

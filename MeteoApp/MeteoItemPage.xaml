@@ -4,20 +4,30 @@
              x:Class="MeteoApp.MeteoItemPage"
              Title="Dettagli Meteo">
     
-    <VerticalStackLayout x:Name="MainLayout" Spacing="30" Padding="20">
+    <VerticalStackLayout x:Name="MainLayout" Spacing="20" Padding="20">
         
         <Label Text="{Binding Entry.Name}"
                FontSize="45"
                HorizontalOptions="Center" 
                VerticalOptions="Start" />
                
+        <Image Source="{Binding IconUrl}"
+               WidthRequest="150"
+               HeightRequest="150"
+               HorizontalOptions="Center" />
+               
+        <Label Text="{Binding Description}"
+               FontSize="25"
+               TextColor="{StaticResource Gray500}"
+               HorizontalOptions="Center" />
+    
         <Label Text="{Binding TemperatureText}"
-               FontSize="35"
+               FontSize="45"
+               FontAttributes="Bold"
                TextColor="{StaticResource Primary}"
                HorizontalOptions="Center" />
 
         <HorizontalStackLayout HorizontalOptions="Center" Spacing="40">
-            
             <Label Text="{Binding TemperatureMinText, StringFormat='Min: {0}'}"
                    FontSize="22"
                    TextColor="LightGray" />
@@ -25,7 +35,6 @@
             <Label Text="{Binding TemperatureMaxText, StringFormat='Max: {0}'}"
                    FontSize="22"
                    TextColor="LightGray" />
-                   
         </HorizontalStackLayout>
         
     </VerticalStackLayout>

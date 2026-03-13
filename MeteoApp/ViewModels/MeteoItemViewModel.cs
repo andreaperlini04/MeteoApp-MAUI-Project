@@ -20,6 +20,18 @@ namespace MeteoApp
         private string _temperatureText;
         private string _temperatureMinText;
         private string _temperatureMaxText;
+        private string _description;
+
+        private string _iconUrl;
+        public string IconUrl
+        {
+            get => _iconUrl;
+            set
+            {
+                _iconUrl = value;
+                OnPropertyChanged();
+            }
+        }
         public string TemperatureText
         {
             get => _temperatureText;
@@ -48,13 +60,21 @@ namespace MeteoApp
                 OnPropertyChanged();
             }
         }
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                _description = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MeteoItemViewModel(Entry entry)
         {
             Entry = entry;
         }
 
-        // Tutta la logica API spostata qui dentro
         public async Task LoadWeatherDataAsync()
         {
             if (Entry == null || string.IsNullOrWhiteSpace(Entry.Name)) return;
@@ -62,6 +82,8 @@ namespace MeteoApp
             TemperatureText = "Caricamento...";
             TemperatureMaxText = "Caricamento...";
             TemperatureMinText = "Caricamento...";
+            Description = "Caricamento...";
+            IconUrl = string.Empty;
 
             string apiKey = Config.OpenWeatherApiKey;
             string url = $"https://api.openweathermap.org/data/2.5/weather?q={Entry.Name}&appid={apiKey}&units=metric&lang=it";
@@ -75,7 +97,17 @@ namespace MeteoApp
                     TemperatureText = $"{response.main.temp} °C";
                     TemperatureMinText = $"{response.main.temp_min} °C";
                     TemperatureMaxText = $"{response.main.temp_max} °C";
+                    
                 }
+
+                if (response.weather != null && response.weather.Length > 0)
+            {
+                string desc = response.weather[0].description;
+                Description = char.ToUpper(desc[0]) + desc.Substring(1); 
+                
+                
+                IconUrl = $"https://openweathermap.org/img/wn/{response.weather[0].icon}@4x.png";
+            }
             }
             catch (Exception)
             {
@@ -87,6 +119,7 @@ namespace MeteoApp
         public class WeatherApiResponse
         {
             public MainData main { get; set; }
+            public WeatherData[] weather { get; set; }
         }
 
         public class MainData
@@ -94,6 +127,13 @@ namespace MeteoApp
             public float temp { get; set; }
             public float temp_min { get; set; }
             public float temp_max { get; set; }
+
+        }
+
+        public class WeatherData 
+        {
+            public string description { get; set; }
+            public string icon { get; set; }
         }
     }
 }
