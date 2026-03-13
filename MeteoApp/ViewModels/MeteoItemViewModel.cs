@@ -18,6 +18,8 @@ namespace MeteoApp
         }
 
         private string _temperatureText;
+        private string _temperatureMinText;
+        private string _temperatureMaxText;
         public string TemperatureText
         {
             get => _temperatureText;
@@ -28,7 +30,25 @@ namespace MeteoApp
             }
         }
 
-        // Il costruttore riceve l'oggetto Entry dalla pagina
+        public string TemperatureMinText
+        {
+            get => _temperatureMinText;
+            set
+            {
+                _temperatureMinText = value;
+                OnPropertyChanged();
+            }
+        }
+        public string TemperatureMaxText
+        {
+            get => _temperatureMaxText;
+            set
+            {
+                _temperatureMaxText = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MeteoItemViewModel(Entry entry)
         {
             Entry = entry;
@@ -40,6 +60,8 @@ namespace MeteoApp
             if (Entry == null || string.IsNullOrWhiteSpace(Entry.Name)) return;
 
             TemperatureText = "Caricamento...";
+            TemperatureMaxText = "Caricamento...";
+            TemperatureMinText = "Caricamento...";
 
             string apiKey = Config.OpenWeatherApiKey;
             string url = $"https://api.openweathermap.org/data/2.5/weather?q={Entry.Name}&appid={apiKey}&units=metric&lang=it";
@@ -51,6 +73,8 @@ namespace MeteoApp
                 if (response != null && response.main != null)
                 {
                     TemperatureText = $"{response.main.temp} °C";
+                    TemperatureMinText = $"{response.main.temp_min} °C";
+                    TemperatureMaxText = $"{response.main.temp_max} °C";
                 }
             }
             catch (Exception)
@@ -68,6 +92,8 @@ namespace MeteoApp
         public class MainData
         {
             public float temp { get; set; }
+            public float temp_min { get; set; }
+            public float temp_max { get; set; }
         }
     }
 }
