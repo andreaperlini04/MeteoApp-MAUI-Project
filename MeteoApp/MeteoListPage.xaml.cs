@@ -1,16 +1,44 @@
-﻿namespace MeteoApp;
+﻿using Microsoft.Maui.ApplicationModel;
+
+namespace MeteoApp;
 
 public partial class MeteoListPage : ContentPage
 {
-   
+    private bool _isRequestingLocationPermission;
 
     public MeteoListPage()
-	{
+    {
         InitializeComponent();
         BindingContext = new MeteoListViewModel();
     }
 
-    
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (_isRequestingLocationPermission)
+        {
+            return;
+        }
+
+        _isRequestingLocationPermission = true;
+
+        try
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+            }
+
+            // if denied: non fare nulla
+        }
+        finally
+        {
+            _isRequestingLocationPermission = false;
+        }
+    }
 
     private void OnListItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
@@ -29,7 +57,7 @@ public partial class MeteoListPage : ContentPage
 
     private void OnItemAdded(object sender, EventArgs e)
     {
-         _ = ShowPrompt();
+        _ = ShowPrompt();
     }
 
     private async Task ShowPrompt()
