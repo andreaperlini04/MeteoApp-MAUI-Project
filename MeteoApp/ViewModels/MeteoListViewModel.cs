@@ -18,7 +18,7 @@ namespace MeteoApp
 
         public MeteoListViewModel()
         {
-            Entries = [];
+            Entries = new ObservableCollection<Entry>();
 
             for (var i = 0; i < 15; i++)
             {
