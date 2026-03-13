@@ -2,6 +2,9 @@
 {
     public class Entry
     {
-        public string CityName { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-
 namespace MeteoApp
 {
     public class MeteoListViewModel : BaseViewModel
     {
         ObservableCollection<Entry> _entries;
-
         public ObservableCollection<Entry> Entries
         {
             get { return _entries; }
@@ -18,15 +16,15 @@ namespace MeteoApp
 
         public MeteoListViewModel()
         {
-            Entries = new ObservableCollection<Entry>
-            {
-                new Entry { CityName = "Roma" },
-                new Entry { CityName = "Milano" },
-                new Entry { CityName = "Napoli" },
-                new Entry { CityName = "Torino" },
-                new Entry { CityName = "Palermo" },
-                new Entry { CityName = "Lugano" }
-            };
+            Entries =
+            [
+                new() { Name = "Roma" },
+                new() { Name = "Milano" },
+                new() { Name = "Napoli" },
+                new() { Name = "Torino" },
+                new() { Name = "Palermo" },
+                new() { Name = "Lugano" }
+            ];
         }
     }
 }

@@ -4,17 +4,15 @@
              x:Class="MeteoApp.MeteoItemPage"
              Title="Dettagli Meteo">
     
-    <StackLayout x:Name="MainLayout" Spacing="20" VerticalOptions="Center" HorizontalOptions="Center">
-        
-        <Label Text="{Binding Entry.CityName}"
-               FontSize="40"
-               FontAttributes="Bold"
-               HorizontalOptions="Center" />
+    <StackLayout x:Name="MainLayout" Spacing="30" Padding="20">
+        <Label Text="{Binding Entry.Name}"
+               FontSize="45"
+               HorizontalOptions="Center" 
+               VerticalOptions="Start" />
                
         <Label Text="{Binding TemperatureText}"
-               FontSize="55"
-               TextColor="DodgerBlue"
+               FontSize="35"
+               TextColor="{StaticResource Primary}"
                HorizontalOptions="Center" />
-               
     </StackLayout>
 </ContentPage>

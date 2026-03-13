@@ -11,7 +11,7 @@
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Margin="20,10,0,10" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                            <Label Text="{Binding CityName}" FontSize="18" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand" />
+                            <Label Text="{Binding Name}" FontSize="18" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand" />
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

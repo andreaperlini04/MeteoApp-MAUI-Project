@@ -25,13 +25,14 @@ public partial class MeteoListPage : Shell
         if (e.SelectedItem != null)
         {
             Entry entry = e.SelectedItem as Entry;
-
             var navigationParameter = new Dictionary<string, object>
             {
                 { "Entry", entry }
             };
-
             Shell.Current.GoToAsync($"entrydetails", navigationParameter);
+            
+            // deseleziono elemento così posso cliccarlo di nuovo
+            ((ListView)sender).SelectedItem = null;
         }
     }
 
@@ -42,6 +43,21 @@ public partial class MeteoListPage : Shell
 
     private async Task ShowPrompt()
     {
-        await DisplayAlert("Add City", "To Be Implemented", "OK");
+        // Chiediamo all'utente la località tramite un popup 
+        string result = await DisplayPromptAsync("Aggiungi Città", "Inserisci il nome della località:");
+        
+        if (!string.IsNullOrWhiteSpace(result))
+        {
+            var newEntry = new Entry
+            {
+                Name = result.Trim()
+            };
+
+            // Aggiungiamo il nuovo elemento alla ObservableCollection
+            if (BindingContext is MeteoListViewModel vm)
+            {
+                vm.Entries.Add(newEntry);
+            }
+        }
     }
 }

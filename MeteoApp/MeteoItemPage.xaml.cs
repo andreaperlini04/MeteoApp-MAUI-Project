@@ -1,29 +1,17 @@
-﻿using System.Net.Http.Json;
-
-namespace MeteoApp;
+﻿namespace MeteoApp;
 
 [QueryProperty(nameof(Entry), "Entry")]
 public partial class MeteoItemPage : ContentPage
 {
-    Entry entry;
+    private Entry _entry;
     public Entry Entry
     {
-        get => entry;
+        get => _entry;
         set
         {
-            entry = value;
-            OnPropertyChanged();
-        }
-    }
-
-    // Nuova proprietà per mostrare la temperatura
-    private string _temperatureText;
-    public string TemperatureText
-    {
-        get => _temperatureText;
-        set
-        {
-            _temperatureText = value;
+            _entry = value;
+            // Assegniamo il nostro ViewModel come BindingContext della pagina
+            BindingContext = new MeteoItemViewModel(_entry);
             OnPropertyChanged();
         }
     }
@@ -31,50 +19,17 @@ public partial class MeteoItemPage : ContentPage
     public MeteoItemPage()
     {
         InitializeComponent();
-        BindingContext = this;
+        // NON mettiamo più BindingContext = this;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await LoadWeatherDataAsync();
-    }
-
-    private async Task LoadWeatherDataAsync()
-    {
-        if (Entry == null || string.IsNullOrWhiteSpace(Entry.CityName)) return;
-
-        TemperatureText = "Caricamento...";
-
-        // INSERISCI QUI LA TUA CHIAVE API DI OPENWEATHER
-        string apiKey = Config.OpenWeatherApiKey;
         
-        // units=metric serve per avere i gradi Celsius
-        string url = $"https://api.openweathermap.org/data/2.5/weather?q={Entry.CityName}&appid={apiKey}&units=metric&lang=it";
-
-        using HttpClient client = new HttpClient();
-        try
+        // Recuperiamo il ViewModel e gli diciamo di caricare i dati
+        if (BindingContext is MeteoItemViewModel vm)
         {
-            var response = await client.GetFromJsonAsync<WeatherApiResponse>(url);
-            if (response != null && response.main != null)
-            {
-                TemperatureText = $"{response.main.temp} °C";
-            }
-        }
-        catch (Exception)
-        {
-            TemperatureText = "Errore durante il recupero dei dati";
+            await vm.LoadWeatherDataAsync();
         }
     }
-}
-
-// Classi di supporto per la deserializzazione del JSON di OpenWeather
-public class WeatherApiResponse
-{
-    public MainData main { get; set; }
-}
-
-public class MainData
-{
-    public float temp { get; set; }
 }
