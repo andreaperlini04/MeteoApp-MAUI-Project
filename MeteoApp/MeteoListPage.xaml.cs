@@ -20,21 +20,20 @@ public partial class MeteoListPage : Shell
             Routing.RegisterRoute(item.Key, item.Value);
     }
 
-    private void OnListItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private void OnListItemSelected(object sender, SelectionChangedEventArgs e)
+{
+    if (e.CurrentSelection.FirstOrDefault() is Entry entry)
     {
-        if (e.SelectedItem != null)
+        var navigationParameter = new Dictionary<string, object>
         {
-            Entry entry = e.SelectedItem as Entry;
-            var navigationParameter = new Dictionary<string, object>
-            {
-                { "Entry", entry }
-            };
-            Shell.Current.GoToAsync($"entrydetails", navigationParameter);
-            
-            // deseleziono elemento così posso cliccarlo di nuovo
-            ((ListView)sender).SelectedItem = null;
-        }
+            { "Entry", entry }
+        };
+        Shell.Current.GoToAsync($"entrydetails", navigationParameter);
+        
+        // Deseleziono l'elemento così posso cliccarlo di nuovo tornando indietro
+        ((CollectionView)sender).SelectedItem = null;
     }
+}
 
     private void OnItemAdded(object sender, EventArgs e)
     {

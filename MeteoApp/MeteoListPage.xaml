@@ -1,21 +1,51 @@
 ﻿<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MeteoApp.MeteoListPage">
-    <ContentPage>
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       x:Class="MeteoApp.MeteoListPage">
+    
+    <ContentPage Title="Le mie Città">
         <ContentPage.ToolbarItems>
-            <ToolbarItem Text="Add" Clicked="OnItemAdded" />
+            <ToolbarItem Text="➕" Clicked="OnItemAdded" />
         </ContentPage.ToolbarItems>
 
-        <ListView x:Name="zlistView" Margin="20" ItemSelected="OnListItemSelected" ItemsSource="{Binding Entries}">
-            <ListView.ItemTemplate>
+        <CollectionView x:Name="zlistView" 
+                        Margin="15,10" 
+                        SelectionMode="Single"
+                        SelectionChanged="OnListItemSelected" 
+                        ItemsSource="{Binding Entries}">
+            
+            <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Margin="20,10,0,10" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                            <Label Text="{Binding Name}" FontSize="18" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand" />
-                        </StackLayout>
-                    </ViewCell>
+                    <Border Margin="5,8" 
+                            Padding="20" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                            Stroke="{StaticResource Gray200}"
+                            StrokeThickness="1">
+                        
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,2" Radius="5" Opacity="0.1" />
+                        </Border.Shadow>
+                        
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0" 
+                                   Text="{Binding Name}" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold" 
+                                   VerticalTextAlignment="Center" />
+                            
+                            <Label Grid.Column="1" 
+                                   Text="›" 
+                                   FontSize="30" 
+                                   TextColor="{StaticResource Primary}" 
+                                   VerticalTextAlignment="Center" />
+                        </Grid>
+                        
+                    </Border>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </ContentPage>
 </Shell>

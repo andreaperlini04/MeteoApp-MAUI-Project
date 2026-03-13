@@ -2,40 +2,68 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MeteoApp.MeteoItemPage"
-             Title="Dettagli Meteo">
+             Title="Dettagli">
     
-    <VerticalStackLayout x:Name="MainLayout" Spacing="20" Padding="20">
-        
-        <Label Text="{Binding Entry.Name}"
-               FontSize="45"
-               HorizontalOptions="Center" 
-               VerticalOptions="Start" />
-               
-        <Image Source="{Binding IconUrl}"
-               WidthRequest="150"
-               HeightRequest="150"
-               HorizontalOptions="Center" />
-               
-        <Label Text="{Binding Description}"
-               FontSize="25"
-               TextColor="{StaticResource Gray500}"
-               HorizontalOptions="Center" />
-    
-        <Label Text="{Binding TemperatureText}"
-               FontSize="45"
-               FontAttributes="Bold"
-               TextColor="{StaticResource Primary}"
-               HorizontalOptions="Center" />
-
-        <HorizontalStackLayout HorizontalOptions="Center" Spacing="40">
-            <Label Text="{Binding TemperatureMinText, StringFormat='Min: {0}'}"
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="20,30,20,20" HorizontalOptions="Center">
+            
+            <Label Text="{Binding Entry.Name}"
+                   FontSize="40"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+                   
+            <Image Source="{Binding IconUrl}"
+                   WidthRequest="180"
+                   HeightRequest="180"
+                   HorizontalOptions="Center"
+                   Margin="0,-10,0,-20" />
+                   
+            <Label Text="{Binding TemperatureText}"
+                   FontSize="65"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Primary}"
+                   HorizontalOptions="Center" />
+                   
+            <Label Text="{Binding Description}"
                    FontSize="22"
-                   TextColor="LightGray" />
+                   TextColor="{StaticResource Gray500}"
+                   TextTransform="Uppercase"
+                   HorizontalOptions="Center" 
+                   Margin="0,-10,0,10"/>
 
-            <Label Text="{Binding TemperatureMaxText, StringFormat='Max: {0}'}"
-                   FontSize="22"
-                   TextColor="LightGray" />
-        </HorizontalStackLayout>
-        
-    </VerticalStackLayout>
+            <Border Margin="0,20,0,0" 
+                    Padding="30,20" 
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Gray900}}"
+                    Stroke="Transparent"
+                    HorizontalOptions="Center">
+                
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20" />
+                </Border.StrokeShape>
+                
+                <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="50">
+                    
+                    <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="5">
+                        <Label Text="Minima" FontSize="14" TextColor="{StaticResource Gray600}" HorizontalOptions="Center"/>
+                        <Label Text="{Binding TemperatureMinText}" 
+                               FontSize="24" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource Blue100Accent}" 
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    
+                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="5">
+                        <Label Text="Massima" FontSize="14" TextColor="{StaticResource Gray600}" HorizontalOptions="Center"/>
+                        <Label Text="{Binding TemperatureMaxText}" 
+                               FontSize="24" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource Yellow100Accent}" 
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    
+                </Grid>
+            </Border>
+            
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
