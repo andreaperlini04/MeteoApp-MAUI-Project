@@ -1,20 +1,49 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MeteoApp.MeteoListPage">
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Clicked="OnItemAdded" />
-    </ContentPage.ToolbarItems>
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       x:Class="MeteoApp.MeteoListPage"
+       Title="Le mie Città">
 
-    <ListView x:Name="zlistView" Margin="20" ItemSelected="OnListItemSelected" ItemsSource="{Binding Entries}">
-            <ListView.ItemTemplate>
+        <ContentPage.ToolbarItems>
+            <ToolbarItem Text="➕" Clicked="OnItemAdded" />
+        </ContentPage.ToolbarItems>
+
+        <CollectionView x:Name="zlistView" 
+                        Margin="15,10" 
+                        SelectionMode="Single"
+                        SelectionChanged="OnListItemSelected" 
+                        ItemsSource="{Binding Entries}">
+            
+            <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Margin="20,0,0,0" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
-                            <Label Text="{Binding Id}" VerticalTextAlignment="Center" HorizontalOptions="StartAndExpand" />
-                            <Image Source="check.png" HorizontalOptions="End" IsVisible="{Binding Done}" />
-                        </StackLayout>
-                    </ViewCell>
+                    <Border Margin="5,8" 
+                            Padding="20" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                            Stroke="{StaticResource Gray200}"
+                            StrokeThickness="1">
+                        
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        
+                        
+                        
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0" 
+                                   Text="{Binding Name}" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold" 
+                                   VerticalTextAlignment="Center" />
+                            
+                            <Label Grid.Column="1" 
+                                   Text="›" 
+                                   FontSize="30" 
+                                   TextColor="{StaticResource Primary}" 
+                                   VerticalTextAlignment="Center" />
+                        </Grid>
+                        
+                    </Border>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
 </ContentPage>

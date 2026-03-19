@@ -5,7 +5,6 @@ namespace MeteoApp;
 public partial class MeteoListPage : ContentPage
 {
     private bool _isRequestingLocationPermission;
-
     public MeteoListPage()
     {
         InitializeComponent();
@@ -15,7 +14,7 @@ public partial class MeteoListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
+        
         if (_isRequestingLocationPermission)
         {
             return;
@@ -25,6 +24,7 @@ public partial class MeteoListPage : ContentPage
 
         try
         {
+            await Task.Delay(500);
             var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
 
             if (status != PermissionStatus.Granted)
@@ -38,20 +38,21 @@ public partial class MeteoListPage : ContentPage
         {
             _isRequestingLocationPermission = false;
         }
+        
     }
 
-    private void OnListItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private void OnListItemSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (e.SelectedItem != null)
+         if (e.CurrentSelection.FirstOrDefault() is MeteoLocation location)
         {
-            Entry entry = e.SelectedItem as Entry;
-
             var navigationParameter = new Dictionary<string, object>
             {
-                { "Entry", entry }
+                { "MeteoLocation", location }
             };
-
             Shell.Current.GoToAsync($"entrydetails", navigationParameter);
+            
+            // Deseleziono l'elemento così posso cliccarlo di nuovo tornando indietro
+            ((CollectionView)sender).SelectedItem = null;
         }
     }
 
@@ -62,6 +63,19 @@ public partial class MeteoListPage : ContentPage
 
     private async Task ShowPrompt()
     {
-        await DisplayAlert("Add City", "To Be Implemented", "OK");
+        string result = await DisplayPromptAsync("Aggiungi Città", "Inserisci il nome della località:");
+        
+        if (!string.IsNullOrWhiteSpace(result))
+        {
+            var newEntry = new MeteoLocation
+            {
+                Name = result.Trim()
+            };
+
+            if (BindingContext is MeteoListViewModel vm)
+            {
+                vm.Entries.Add(newEntry);
+            }
+        }
     }
 }

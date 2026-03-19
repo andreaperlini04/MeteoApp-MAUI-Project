@@ -1,15 +1,16 @@
 ﻿namespace MeteoApp;
 
-[QueryProperty(nameof(Entry), "Entry")]
+[QueryProperty(nameof(MeteoLocation), "MeteoLocation")]
 public partial class MeteoItemPage : ContentPage
 {
-    Entry entry;
-    public Entry Entry
+    private MeteoLocation _entry;
+    public MeteoLocation MeteoLocation
     {
-        get => entry;
+        get => _entry;
         set
         {
-            entry = value;
+            _entry = value;
+            BindingContext = new MeteoItemViewModel(_entry);
             OnPropertyChanged();
         }
     }
@@ -17,11 +18,15 @@ public partial class MeteoItemPage : ContentPage
     public MeteoItemPage()
     {
         InitializeComponent();
-        BindingContext = this;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
+        
+        if (BindingContext is MeteoItemViewModel vm)
+        {
+            await vm.LoadWeatherDataAsync();
+        }
     }
 }
