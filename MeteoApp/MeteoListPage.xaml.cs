@@ -69,7 +69,7 @@ public partial class MeteoListPage : ContentPage
         {
             var newEntry = new MeteoLocation
             {
-                Name = result.Trim()
+                Name = result
             };
 
             if (BindingContext is MeteoListViewModel vm)

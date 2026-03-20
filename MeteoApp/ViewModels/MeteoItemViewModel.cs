@@ -86,7 +86,8 @@ namespace MeteoApp
             IconUrl = string.Empty;
 
             string apiKey = Config.OpenWeatherApiKey;
-            string url = $"https://api.openweathermap.org/data/2.5/weather?q={MeteoLocation.Name}&appid={apiKey}&units=metric&lang=it";
+            string cityQuery = MeteoLocation.Name.TrimEnd().TrimStart().Replace(" ","+");
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityQuery}&appid={apiKey}&units=metric&lang=it";
 
             using HttpClient client = new HttpClient();
             try
