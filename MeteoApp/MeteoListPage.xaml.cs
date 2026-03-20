@@ -64,13 +64,14 @@ public partial class MeteoListPage : ContentPage
     private async Task ShowPrompt()
     {
         string result = await DisplayPromptAsync("Aggiungi Città", "Inserisci il nome della località:");
-        
         if (!string.IsNullOrWhiteSpace(result))
         {
             var newEntry = new MeteoLocation
             {
-                Name = result
+                Name = result.Trim()
             };
+
+            await App.Database.SaveLocationAsync(newEntry);
 
             if (BindingContext is MeteoListViewModel vm)
             {

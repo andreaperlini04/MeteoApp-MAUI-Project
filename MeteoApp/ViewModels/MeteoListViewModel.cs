@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+
 namespace MeteoApp
 {
     public class MeteoListViewModel : BaseViewModel
@@ -16,15 +18,20 @@ namespace MeteoApp
 
         public MeteoListViewModel()
         {
-            Entries =
-            [
-                new() { Name = "Roma" },
-                new() { Name = "Milano" },
-                new() { Name = "Napoli" },
-                new() { Name = "Torino" },
-                new() { Name = "Palermo" },
-                new() { Name = "Lugano" }
-            ];
+            Entries = new ObservableCollection<MeteoLocation>();
+            _ = LoadCitiesAsync(); // Carica le città all'avvio
+        }
+
+        public async Task LoadCitiesAsync()
+        {
+            // Recupera le voci dal database locale
+            var locations = await App.Database.GetLocationsAsync();
+            
+            Entries.Clear();
+            foreach (var location in locations)
+            {
+                Entries.Add(location);
+            }
         }
     }
 }
