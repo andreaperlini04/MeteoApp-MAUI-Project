@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.ApplicationModel;
 
 namespace MeteoApp;
 
@@ -76,6 +76,19 @@ public partial class MeteoListPage : ContentPage
             if (BindingContext is MeteoListViewModel vm)
             {
                 vm.Entries.Add(newEntry);
+            }
+        }
+    }
+
+    private async void OnDeleteItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem swipeItem && swipeItem.CommandParameter is MeteoLocation location)
+        {
+            await App.Database.DeleteLocationAsync(location);
+            
+            if (BindingContext is MeteoListViewModel vm)
+            {
+                vm.Entries.Remove(location);
             }
         }
     }

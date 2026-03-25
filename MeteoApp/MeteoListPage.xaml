@@ -1,4 +1,4 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        x:Class="MeteoApp.MeteoListPage"
        Title="Le mie Città">
@@ -15,33 +15,57 @@
             
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Margin="5,8" 
-                            Padding="20" 
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                            Stroke="{StaticResource Gray200}"
-                            StrokeThickness="1">
-                        
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
-                        </Border.StrokeShape>
-                        
-                        
-                        
-                        <Grid ColumnDefinitions="*, Auto">
-                            <Label Grid.Column="0" 
-                                   Text="{Binding Name}" 
-                                   FontSize="20" 
-                                   FontAttributes="Bold" 
-                                   VerticalTextAlignment="Center" />
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItemView Invoked="OnDeleteItemInvoked" CommandParameter="{Binding .}">
+                                    <Border Margin="0,8,5,8" 
+                                            Padding="20,0" 
+                                            BackgroundColor="{AppThemeBinding Light=#FF3B30, Dark=#FF453A}"
+                                            Stroke="Transparent">
+                                        
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12" />
+                                        </Border.StrokeShape>
+                                        
+                                        <Label Text="Elimina" 
+                                               TextColor="White" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold" 
+                                               VerticalTextAlignment="Center"
+                                               HorizontalTextAlignment="Center" />
+                                    </Border>
+                                </SwipeItemView>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Border Margin="5,8" 
+                                Padding="20" 
+                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                                Stroke="{StaticResource Gray200}"
+                                StrokeThickness="1">
                             
-                            <Label Grid.Column="1" 
-                                   Text="›" 
-                                   FontSize="30" 
-                                   TextColor="{StaticResource Primary}" 
-                                   VerticalTextAlignment="Center" />
-                        </Grid>
-                        
-                    </Border>
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            
+                            
+                            
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" 
+                                       Text="{Binding Name}" 
+                                       FontSize="20" 
+                                       FontAttributes="Bold" 
+                                       VerticalTextAlignment="Center" />
+                                
+                                <Label Grid.Column="1" 
+                                       Text="›" 
+                                       FontSize="30" 
+                                       TextColor="{StaticResource Primary}" 
+                                       VerticalTextAlignment="Center" />
+                            </Grid>
+                            
+                        </Border>
+                    </SwipeView>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
