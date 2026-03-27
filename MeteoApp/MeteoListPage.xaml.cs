@@ -82,7 +82,7 @@ public partial class MeteoListPage : ContentPage
 
     private async void OnDeleteItemInvoked(object sender, EventArgs e)
     {
-        if (sender is SwipeItem swipeItem && swipeItem.CommandParameter is MeteoLocation location)
+        if (sender is SwipeItemView swipeItem && swipeItem.CommandParameter is MeteoLocation location)
         {
             await App.Database.DeleteLocationAsync(location);
             
