@@ -88,5 +88,6 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
    		<GoogleServicesJson Include="./Platforms/Android/google-services.json" />
 	</ItemGroup>
+	
 
 </Project>

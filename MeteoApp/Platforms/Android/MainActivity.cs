@@ -3,6 +3,8 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Plugin.Firebase.CloudMessaging;
+using System;
+using System.Threading.Tasks;
 
 namespace MeteoApp
 {
@@ -15,7 +17,20 @@ namespace MeteoApp
             HandleIntent(Intent);
             CreateNotificationChannelIfNeeded();
 
+            RequestNotificationPermission();
+
             _ = FetchFcmToken();
+        }
+
+        private void RequestNotificationPermission()
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu)
+            {
+                if (CheckSelfPermission(Android.Manifest.Permission.PostNotifications) != Permission.Granted)
+                {
+                    RequestPermissions(new[] { Android.Manifest.Permission.PostNotifications }, 0);
+                }
+            }
         }
 
         private async Task FetchFcmToken()
@@ -23,13 +38,13 @@ namespace MeteoApp
             try
             {
                 await CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
-                
                 var token = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
-                
-                Console.WriteLine($"FCM Device Token: {token}");
-                
+
+
+                Console.WriteLine($"\n\n---> FCM Device Token: {token} <--- \n\n");
+                System.Diagnostics.Debug.WriteLine($"\n\n---> FCM Device Token: {token} <--- \n\n");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Errore recupero token: {ex.Message}");
             }
