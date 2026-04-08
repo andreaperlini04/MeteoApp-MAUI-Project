@@ -5,6 +5,8 @@ namespace MeteoApp;
 public partial class MeteoListPage : ContentPage
 {
     private bool _isRequestingLocationPermission;
+    private bool _locationLoaded;
+
     public MeteoListPage()
     {
         InitializeComponent();
@@ -14,11 +16,8 @@ public partial class MeteoListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        
-        if (_isRequestingLocationPermission)
-        {
-            return;
-        }
+
+        if (_isRequestingLocationPermission) return;
 
         _isRequestingLocationPermission = true;
 
@@ -32,13 +31,16 @@ public partial class MeteoListPage : ContentPage
                 status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
             }
 
-            // if denied: non fare nulla
+            if (status == PermissionStatus.Granted && !_locationLoaded && BindingContext is MeteoListViewModel vm)
+            {
+                _locationLoaded = true;
+                await vm.LoadCurrentLocationAsync();
+            }
         }
         finally
         {
             _isRequestingLocationPermission = false;
         }
-        
     }
 
     private void OnListItemSelected(object sender, SelectionChangedEventArgs e)
@@ -51,7 +53,6 @@ public partial class MeteoListPage : ContentPage
             };
             Shell.Current.GoToAsync($"entrydetails", navigationParameter);
             
-            // Deseleziono l'elemento così posso cliccarlo di nuovo tornando indietro
             ((CollectionView)sender).SelectedItem = null;
         }
     }
