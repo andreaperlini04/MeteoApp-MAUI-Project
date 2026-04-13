@@ -93,6 +93,26 @@ namespace MeteoApp
             return (cityName, 0, 0);
         }
 
+        public async Task<string> GetCityNameFromCoordinatesAsync(double lat, double lon)
+        {
+            string apiKey = Config.OpenWeatherApiKey;
+            string latStr = lat.ToString(CultureInfo.InvariantCulture);
+            string lonStr = lon.ToString(CultureInfo.InvariantCulture);
+            string url = $"https://api.openweathermap.org/data/2.5/weather?lat={latStr}&lon={lonStr}&appid={apiKey}";
+
+            using HttpClient client = new HttpClient();
+            try
+            {
+                var response = await client.GetFromJsonAsync<LocationWeatherResponse>(url);
+                if (response != null && !string.IsNullOrWhiteSpace(response.name))
+                    return response.name;
+            }
+            catch (Exception)
+            {
+            }
+            return string.Empty;
+        }
+
         private class LocationWeatherResponse
         {
             public string name { get; set; }

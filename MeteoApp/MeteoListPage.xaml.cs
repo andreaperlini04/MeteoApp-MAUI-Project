@@ -59,30 +59,31 @@ public partial class MeteoListPage : ContentPage
 
     private void OnItemAdded(object sender, EventArgs e)
     {
-        _ = ShowPrompt();
+        _ = ShowAddLocationPage();
     }
 
-    private async Task ShowPrompt()
+    private async Task ShowAddLocationPage()
     {
-        string result = await DisplayPromptAsync("Aggiungi Città", "Inserisci il nome della località:");
-        if (!string.IsNullOrWhiteSpace(result))
+        if (BindingContext is not MeteoListViewModel vm) return;
+
+        var tcs = new TaskCompletionSource<MeteoLocation>();
+        await Navigation.PushModalAsync(new NavigationPage(new AddLocationPage(vm, tcs)));
+        var result = await tcs.Task;
+
+        if (result == null) return;
+
+        // Se l'utente ha scritto solo il nome senza cliccare la mappa,
+        // recupera le coordinate e il nome corretto da OpenWeather
+        if (result.Latitude == 0 && result.Longitude == 0)
         {
-            var newEntry = new MeteoLocation
-            {
-                Name = result.Trim()
-            };
-
-            if (BindingContext is MeteoListViewModel vm)
-            {
-                var (name, lat, lon) = await vm.GetCityInfoAsync(newEntry.Name);
-                newEntry.Name = name;
-                newEntry.Latitude = lat;
-                newEntry.Longitude = lon;
-
-                await App.Database.SaveLocationAsync(newEntry);
-                vm.Entries.Add(newEntry);
-            }
+            var (name, lat, lon) = await vm.GetCityInfoAsync(result.Name);
+            result.Name = name;
+            result.Latitude = lat;
+            result.Longitude = lon;
         }
+
+        await App.Database.SaveLocationAsync(result);
+        vm.Entries.Add(result);
     }
 
     private async void OnDeleteItemInvoked(object sender, EventArgs e)
