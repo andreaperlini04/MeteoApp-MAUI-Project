@@ -61,7 +61,12 @@ namespace MeteoApp
                 if (response != null && !string.IsNullOrWhiteSpace(response.name))
                 {
                     CurrentLocationEntries.Clear();
-                    CurrentLocationEntries.Add(new MeteoLocation { Name = response.name });
+                    CurrentLocationEntries.Add(new MeteoLocation
+                    {
+                        Name = response.name,
+                        Latitude = gpsLocation.Latitude,
+                        Longitude = gpsLocation.Longitude
+                    });
                 }
             }
             catch (Exception)
@@ -69,9 +74,40 @@ namespace MeteoApp
             }
         }
 
+        public async Task<(string Name, double Latitude, double Longitude)> GetCityInfoAsync(string cityName)
+        {
+            string apiKey = Config.OpenWeatherApiKey;
+            string cityQuery = cityName.Trim().Replace(" ", "+");
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityQuery}&appid={apiKey}";
+
+            using HttpClient client = new HttpClient();
+            try
+            {
+                var response = await client.GetFromJsonAsync<CityWeatherResponse>(url);
+                if (response?.coord != null && !string.IsNullOrWhiteSpace(response.name))
+                    return (response.name, response.coord.lat, response.coord.lon);
+            }
+            catch (Exception)
+            {
+            }
+            return (cityName, 0, 0);
+        }
+
         private class LocationWeatherResponse
         {
             public string name { get; set; }
+        }
+
+        private class CityWeatherResponse
+        {
+            public string name { get; set; }
+            public CoordData coord { get; set; }
+        }
+
+        private class CoordData
+        {
+            public double lat { get; set; }
+            public double lon { get; set; }
         }
     }
 }

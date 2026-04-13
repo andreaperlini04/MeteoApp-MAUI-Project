@@ -72,10 +72,14 @@ public partial class MeteoListPage : ContentPage
                 Name = result.Trim()
             };
 
-            await App.Database.SaveLocationAsync(newEntry);
-
             if (BindingContext is MeteoListViewModel vm)
             {
+                var (name, lat, lon) = await vm.GetCityInfoAsync(newEntry.Name);
+                newEntry.Name = name;
+                newEntry.Latitude = lat;
+                newEntry.Longitude = lon;
+
+                await App.Database.SaveLocationAsync(newEntry);
                 vm.Entries.Add(newEntry);
             }
         }
