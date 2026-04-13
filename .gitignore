@@ -399,3 +399,4 @@ FodyWeavers.xsd
 .DS_Store
 
 MeteoApp/Config.cs
+MeteoApp/Platforms/Android/Resources/values/strings.xml
