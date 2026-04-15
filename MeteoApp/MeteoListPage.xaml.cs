@@ -5,6 +5,8 @@ namespace MeteoApp;
 public partial class MeteoListPage : ContentPage
 {
     private bool _isRequestingLocationPermission;
+    private bool _locationLoaded;
+
     public MeteoListPage()
     {
         InitializeComponent();
@@ -14,11 +16,8 @@ public partial class MeteoListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        
-        if (_isRequestingLocationPermission)
-        {
-            return;
-        }
+
+        if (_isRequestingLocationPermission) return;
 
         _isRequestingLocationPermission = true;
 
@@ -32,13 +31,16 @@ public partial class MeteoListPage : ContentPage
                 status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
             }
 
-            // if denied: non fare nulla
+            if (status == PermissionStatus.Granted && !_locationLoaded && BindingContext is MeteoListViewModel vm)
+            {
+                _locationLoaded = true;
+                await vm.LoadCurrentLocationAsync();
+            }
         }
         finally
         {
             _isRequestingLocationPermission = false;
         }
-        
     }
 
     private void OnListItemSelected(object sender, SelectionChangedEventArgs e)
@@ -51,38 +53,42 @@ public partial class MeteoListPage : ContentPage
             };
             Shell.Current.GoToAsync($"entrydetails", navigationParameter);
             
-            // Deseleziono l'elemento così posso cliccarlo di nuovo tornando indietro
             ((CollectionView)sender).SelectedItem = null;
         }
     }
 
     private void OnItemAdded(object sender, EventArgs e)
     {
-        _ = ShowPrompt();
+        _ = ShowAddLocationPage();
     }
 
-    private async Task ShowPrompt()
+    private async Task ShowAddLocationPage()
     {
-        string result = await DisplayPromptAsync("Aggiungi Città", "Inserisci il nome della località:");
-        if (!string.IsNullOrWhiteSpace(result))
+        if (BindingContext is not MeteoListViewModel vm) return;
+
+        var tcs = new TaskCompletionSource<MeteoLocation>();
+        await Navigation.PushModalAsync(new NavigationPage(new AddLocationPage(vm, tcs)));
+        var result = await tcs.Task;
+
+        if (result == null) return;
+
+        // Se l'utente ha scritto solo il nome senza cliccare la mappa,
+        // recupera le coordinate e il nome corretto da OpenWeather
+        if (result.Latitude == 0 && result.Longitude == 0)
         {
-            var newEntry = new MeteoLocation
-            {
-                Name = result.Trim()
-            };
-
-            await App.Database.SaveLocationAsync(newEntry);
-
-            if (BindingContext is MeteoListViewModel vm)
-            {
-                vm.Entries.Add(newEntry);
-            }
+            var (name, lat, lon) = await vm.GetCityInfoAsync(result.Name);
+            result.Name = name;
+            result.Latitude = lat;
+            result.Longitude = lon;
         }
+
+        await App.Database.SaveLocationAsync(result);
+        vm.Entries.Add(result);
     }
 
     private async void OnDeleteItemInvoked(object sender, EventArgs e)
     {
-        if (sender is SwipeItem swipeItem && swipeItem.CommandParameter is MeteoLocation location)
+        if (sender is SwipeItemView swipeItem && swipeItem.CommandParameter is MeteoLocation location)
         {
             await App.Database.DeleteLocationAsync(location);
             
