@@ -72,6 +72,7 @@ namespace MeteoApp
             catch (Exception)
             {
             }
+
         }
 
         public async Task<(string Name, double Latitude, double Longitude)> GetCityInfoAsync(string cityName)
@@ -89,8 +90,10 @@ namespace MeteoApp
             }
             catch (Exception)
             {
+                // errore (es. città non trovata, l'API restituisce 404).
             }
-            return (cityName, 0, 0);
+
+            return (null, 0, 0);
         }
 
         public async Task<string> GetCityNameFromCoordinatesAsync(double lat, double lon)
@@ -100,7 +103,7 @@ namespace MeteoApp
             string lonStr = lon.ToString(CultureInfo.InvariantCulture);
             string url = $"https://api.openweathermap.org/data/2.5/weather?lat={latStr}&lon={lonStr}&appid={apiKey}";
 
-            using HttpClient client = new HttpClient();
+            using HttpClient client = new();
             try
             {
                 var response = await client.GetFromJsonAsync<LocationWeatherResponse>(url);

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
   <string name="com.google.firebase.crashlytics.mapping_file_id">none</string>
+  <string name="google_maps_key">AIzaSyB7Q-3tP0IJjPVmap2rDmmK6dp24bqzlnw</string>
 </resources>

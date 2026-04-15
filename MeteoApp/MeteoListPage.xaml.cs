@@ -1,4 +1,4 @@
-using Microsoft.Maui.ApplicationModel;
+﻿using Microsoft.Maui.ApplicationModel;
 
 namespace MeteoApp;
 
@@ -45,14 +45,14 @@ public partial class MeteoListPage : ContentPage
 
     private void OnListItemSelected(object sender, SelectionChangedEventArgs e)
     {
-         if (e.CurrentSelection.FirstOrDefault() is MeteoLocation location)
+        if (e.CurrentSelection.FirstOrDefault() is MeteoLocation location)
         {
             var navigationParameter = new Dictionary<string, object>
             {
                 { "MeteoLocation", location }
             };
             Shell.Current.GoToAsync($"entrydetails", navigationParameter);
-            
+
             ((CollectionView)sender).SelectedItem = null;
         }
     }
@@ -70,18 +70,11 @@ public partial class MeteoListPage : ContentPage
         await Navigation.PushModalAsync(new NavigationPage(new AddLocationPage(vm, tcs)));
         var result = await tcs.Task;
 
+        // Se result è null significa che l'utente ha premuto "Annulla"
         if (result == null) return;
 
-        // Se l'utente ha scritto solo il nome senza cliccare la mappa,
-        // recupera le coordinate e il nome corretto da OpenWeather
-        if (result.Latitude == 0 && result.Longitude == 0)
-        {
-            var (name, lat, lon) = await vm.GetCityInfoAsync(result.Name);
-            result.Name = name;
-            result.Latitude = lat;
-            result.Longitude = lon;
-        }
-
+        // Arrivati a questo punto, sappiamo già che i dati in "result" sono validi
+        // perché il controllo API è stato fatto all'interno di AddLocationPage.
         await App.Database.SaveLocationAsync(result);
         vm.Entries.Add(result);
     }
@@ -91,7 +84,7 @@ public partial class MeteoListPage : ContentPage
         if (sender is SwipeItemView swipeItem && swipeItem.CommandParameter is MeteoLocation location)
         {
             await App.Database.DeleteLocationAsync(location);
-            
+
             if (BindingContext is MeteoListViewModel vm)
             {
                 vm.Entries.Remove(location);

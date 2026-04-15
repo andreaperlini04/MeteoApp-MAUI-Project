@@ -91,18 +91,41 @@ public partial class AddLocationPage : ContentPage
     private async void OnSave(object sender, EventArgs e)
     {
         string name = CityEntry.Text?.Trim();
-
         if (string.IsNullOrWhiteSpace(name))
         {
-            await DisplayAlert("Errore", "Clicca sulla mappa o scrivi il nome di una città.", "OK");
+            // Nota: usa DisplayAlertAsync se ti dà l'avviso di obsolescenza
+            await DisplayAlertAsync("Errore", "Clicca sulla mappa o scrivi il nome di una città.", "OK");
             return;
         }
 
+        double finalLat = _selectedLat;
+        double finalLon = _selectedLon;
+        string finalName = name;
+
+        // Se l'utente ha scritto il nome senza usare la mappa (lat e lon sono 0), verifichiamo subito
+        if (finalLat == 0 && finalLon == 0)
+        {
+            var (apiName, lat, lon) = await _viewModel.GetCityInfoAsync(name);
+
+            // Se la città non viene trovata
+            if (string.IsNullOrEmpty(apiName))
+            {
+                await DisplayAlertAsync("Errore", "La città inserita non esiste o non è stata trovata. Riprova.", "OK");
+                return; // Interrompiamo l'esecuzione qui! La pagina NON si chiude.
+            }
+
+            // Se la città è valida, aggiorniamo i dati con quelli ufficiali di OpenWeather
+            finalName = apiName;
+            finalLat = lat;
+            finalLon = lon;
+        }
+
+        // Se siamo arrivati qui, la città è valida. Impostiamo il risultato e chiudiamo la modale.
         _tcs.SetResult(new MeteoLocation
         {
-            Name = name,
-            Latitude = _selectedLat,
-            Longitude = _selectedLon
+            Name = finalName,
+            Latitude = finalLat,
+            Longitude = finalLon
         });
 
         await Navigation.PopModalAsync();

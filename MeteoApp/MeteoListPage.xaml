@@ -1,22 +1,103 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       x:Class="MeteoApp.MeteoListPage"
-       Title="Le mie Città">
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MeteoApp.MeteoListPage"
+             Title="Le mie Città">
 
-        <ContentPage.ToolbarItems>
-            <ToolbarItem Text="➕" Clicked="OnItemAdded" />
-        </ContentPage.ToolbarItems>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="➕" Clicked="OnItemAdded" />
+    </ContentPage.ToolbarItems>
 
-        <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
 
-            <CollectionView Grid.Row="0"
-                            Margin="15,10,15,0"
-                            SelectionMode="Single"
-                            SelectionChanged="OnListItemSelected"
-                            ItemsSource="{Binding CurrentLocationEntries}">
+        <Label Grid.Row="0" 
+               Text="Posizione Attuale" 
+               FontSize="18" 
+               FontAttributes="Bold" 
+               TextColor="{StaticResource Primary}"
+               Margin="20,15,20,0" />
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
+        <CollectionView Grid.Row="1"
+                        Margin="15,5,15,0"
+                        SelectionMode="Single"
+                        SelectionChanged="OnListItemSelected"
+                        ItemsSource="{Binding CurrentLocationEntries}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="5,8"
+                            Padding="20"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                            Stroke="{StaticResource Gray200}"
+                            StrokeThickness="1">
+
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Label Grid.Column="0"
+                                   Text="📍"
+                                   FontSize="20"
+                                   VerticalTextAlignment="Center"
+                                   Margin="0,0,10,0" />
+
+                            <Label Grid.Column="1"
+                                   Text="{Binding Name}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   VerticalTextAlignment="Center" />
+
+                            <Label Grid.Column="2"
+                                   Text="›"
+                                   FontSize="30"
+                                   TextColor="{StaticResource Primary}"
+                                   VerticalTextAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Label Grid.Row="2" 
+               Text="Città Salvate" 
+               FontSize="18" 
+               FontAttributes="Bold" 
+               TextColor="{StaticResource Primary}"
+               Margin="20,25,20,0" />
+
+        <CollectionView Grid.Row="3"
+                        x:Name="zlistView"
+                        Margin="15,5,15,10"
+                        SelectionMode="Single"
+                        SelectionChanged="OnListItemSelected"
+                        ItemsSource="{Binding Entries}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItemView Invoked="OnDeleteItemInvoked" CommandParameter="{Binding .}">
+                                    <Border Margin="0,8,5,8"
+                                            Padding="20,0"
+                                            BackgroundColor="{AppThemeBinding Light=#FF3B30, Dark=#FF453A}"
+                                            Stroke="Transparent">
+
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12" />
+                                        </Border.StrokeShape>
+
+                                        <Label Text="Elimina"
+                                               TextColor="White"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               VerticalTextAlignment="Center"
+                                               HorizontalTextAlignment="Center" />
+                                    </Border>
+                                </SwipeItemView>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        
                         <Border Margin="5,8"
                                 Padding="20"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
@@ -27,94 +108,25 @@
                                 <RoundRectangle CornerRadius="12" />
                             </Border.StrokeShape>
 
-                            <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0"
-                                       Text=""
-                                       FontSize="20"
-                                       VerticalTextAlignment="Center"
-                                       Margin="0,0,10,0" />
-
-                                <Label Grid.Column="1"
                                        Text="{Binding Name}"
                                        FontSize="20"
                                        FontAttributes="Bold"
                                        VerticalTextAlignment="Center" />
 
-                                <Label Grid.Column="2"
+                                <Label Grid.Column="1"
                                        Text="›"
                                        FontSize="30"
                                        TextColor="{StaticResource Primary}"
                                        VerticalTextAlignment="Center" />
                             </Grid>
-
                         </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-            </CollectionView>
-
-            <CollectionView Grid.Row="1"
-                            x:Name="zlistView"
-                            Margin="15,10"
-                            SelectionMode="Single"
-                            SelectionChanged="OnListItemSelected"
-                            ItemsSource="{Binding Entries}">
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItemView Invoked="OnDeleteItemInvoked" CommandParameter="{Binding .}">
-                                        <Border Margin="0,8,5,8"
-                                                Padding="20,0"
-                                                BackgroundColor="{AppThemeBinding Light=#FF3B30, Dark=#FF453A}"
-                                                Stroke="Transparent">
-
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="12" />
-                                            </Border.StrokeShape>
-
-                                            <Label Text="Elimina"
-                                                   TextColor="White"
-                                                   FontSize="16"
-                                                   FontAttributes="Bold"
-                                                   VerticalTextAlignment="Center"
-                                                   HorizontalTextAlignment="Center" />
-                                        </Border>
-                                    </SwipeItemView>
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                            <Border Margin="5,8"
-                                    Padding="20"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                                    Stroke="{StaticResource Gray200}"
-                                    StrokeThickness="1">
-
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="12" />
-                                </Border.StrokeShape>
-
-                                <Grid ColumnDefinitions="*, Auto">
-                                    <Label Grid.Column="0"
-                                           Text="{Binding Name}"
-                                           FontSize="20"
-                                           FontAttributes="Bold"
-                                           VerticalTextAlignment="Center" />
-
-                                    <Label Grid.Column="1"
-                                           Text="›"
-                                           FontSize="30"
-                                           TextColor="{StaticResource Primary}"
-                                           VerticalTextAlignment="Center" />
-                                </Grid>
-
-                            </Border>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-        </Grid>
+    </Grid>
 
 </ContentPage>
