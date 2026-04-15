@@ -403,5 +403,5 @@ MeteoApp/Config.cs
 MeteoApp/Platforms/Android/google-services.json
 
 # Se la cartella del server Node.js è dentro il progetto:
-MauiServer/serviceAccountKey.json
 MeteoApp/Platforms/Android/Resources/values/strings.xml
+MauiServer/serviceAccountKey.json

@@ -1,3 +1,4 @@
 <resources>
     <string name="google_maps_key">YOUR_GOOGLE_MAPS_API_KEY</string>
+    <string name="com.google.firebase.crashlytics.mapping_file_id">none</string>
 </resources>
