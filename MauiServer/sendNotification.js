@@ -1,6 +1,3 @@
-// To run this code, use the command: node sendNotification.js
-// install firebase-admin package using npm before running the code: npm install firebase-admin
-
 var admin = require("firebase-admin");
 var serviceAccount = require("./serviceAccountKey.json");
 
@@ -8,22 +5,27 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-// andare a d C:\Users\UTENTE\AppData\Local\Android\Sdk\platform-tools\
-// poi fare .\adb.exe logcat | findstr "FCM"
-var registrationToken = "c_Yx79FtQXa4pLvG7ViQUc:APA91bHfSh7HQK7vPZm9dyA1k6JXG3yfd_vPU_R-5FbjInxabxtHd0UY5lFGtRcy-Trat3HYnqnTucUtYDc4R86dgNfdCND61X4igZzm6UlY9OP3rMdtg8Q";
+// INCOLLA QUI IL TOKEN PRESO DALLA CONSOLE WEB DI FIREBASE
+var registrationToken = "dXdSH-9vTaa1IuWphEB5j1:APA91bGu827VosPXhLu6EFypUHQxXbvlFPphVSjHBDcFdy7FZk-PD8swey9ftuxXUJBAKO4_8Uz5_ObYtplJzcJeDQdHjRkWjKckMM3WU8W1NY41cHJBNQA";
+
+// Rimuove eventuali spazi o a capo invisibili copiati per sbaglio!
+registrationToken = registrationToken.trim(); 
+
+console.log("Sto provando a inviare al Token: " + registrationToken);
+console.log("Lunghezza Token: " + registrationToken.length + " caratteri");
 
 var message = {
     token: registrationToken,
     notification: {
-        title: "Notification Title",
-        body: "This is a notification message"
+        title: "Test da Node.js",
+        body: "Se leggi questo, abbiamo vinto!"
     }
 };
 
 admin.messaging().send(message)
 .then(function(response) {
-    console.log("Notification sent successfully:", response);
+    console.log("VITTORIA! Notifica inviata:", response);
 })
 .catch(function(error) {
-    console.log("Error sending Notification:", error);
+    console.log("Errore:", error.errorInfo.message);
 });

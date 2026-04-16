@@ -18,7 +18,8 @@ namespace MeteoApp
             CreateNotificationChannelIfNeeded();
 
             RequestNotificationPermission();
-
+            
+            // ATTIVARE PER AVERE TOKEN DISPOSITIVO PER RICEVERE NOTIFICHE
             _ = FetchFcmToken();
         }
 
@@ -37,12 +38,24 @@ namespace MeteoApp
         {
             try
             {
+                // 1. Controlla che i servizi Firebase/Google Play siano validi
                 await CrossFirebaseCloudMessaging.Current.CheckIfValidAsync();
+
+                // 2. Richiede il Token univoco del dispositivo
                 var token = await CrossFirebaseCloudMessaging.Current.GetTokenAsync();
 
-
-                Console.WriteLine($"\n\n---> FCM Device Token: {token} <--- \n\n");
+                // Lo stampa nella console di Debug di Visual Studio / VS Code
                 System.Diagnostics.Debug.WriteLine($"\n\n---> FCM Device Token: {token} <--- \n\n");
+
+                // (Opzionale ma comodissimo) Lo mostra direttamente sullo schermo del telefono
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    new Android.App.AlertDialog.Builder(this)
+                        .SetTitle("IL TUO TOKEN FCM È:")
+                        .SetMessage(token)
+                        .SetPositiveButton("OK", (sender, args) => { })
+                        .Show();
+                });
             }
             catch (Exception ex)
             {

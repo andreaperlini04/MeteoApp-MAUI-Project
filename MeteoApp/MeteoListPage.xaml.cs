@@ -16,7 +16,6 @@ public partial class MeteoListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
         if (_isRequestingLocationPermission) return;
 
         _isRequestingLocationPermission = true;
@@ -36,6 +35,12 @@ public partial class MeteoListPage : ContentPage
                 _locationLoaded = true;
                 await vm.LoadCurrentLocationAsync();
             }
+        }
+        catch (Exception ex)
+        {
+            // Aggiungiamo questo blocco per catturare l'eccezione dei permessi!
+            // Così l'app non crasha, ma eviterà solo di caricare la posizione.
+            Console.WriteLine($"Errore permessi: {ex.Message}");
         }
         finally
         {
