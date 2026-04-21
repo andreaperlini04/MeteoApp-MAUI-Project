@@ -1,6 +1,6 @@
 ﻿using SQLite;
 
-namespace MeteoApp
+namespace MeteoApp.Core.Models
 {
     public class MeteoLocation
     {

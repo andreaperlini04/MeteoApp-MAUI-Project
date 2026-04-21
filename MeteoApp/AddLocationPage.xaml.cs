@@ -1,5 +1,7 @@
+using MeteoApp.Core.Models;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
+using MeteoApp.Core.Services;
 
 namespace MeteoApp;
 
@@ -7,15 +9,17 @@ public partial class AddLocationPage : ContentPage
 {
     private readonly MeteoListViewModel _viewModel;
     private readonly TaskCompletionSource<MeteoLocation> _tcs;
+    private readonly WeatherService _weatherService;
     private double _selectedLat = 0;
     private double _selectedLon = 0;
     private bool _isSettingTextFromMap = false;
 
-    public AddLocationPage(MeteoListViewModel viewModel, TaskCompletionSource<MeteoLocation> tcs)
+    public AddLocationPage(MeteoListViewModel viewModel, TaskCompletionSource<MeteoLocation> tcs, WeatherService weatherService)
     {
         InitializeComponent();
         _viewModel = viewModel;
         _tcs = tcs;
+        _weatherService = weatherService;
     }
 
     protected override async void OnAppearing()
@@ -72,7 +76,7 @@ public partial class AddLocationPage : ContentPage
         CityEntry.Text = string.Empty;
         _isSettingTextFromMap = false;
 
-        string cityName = await _viewModel.GetCityNameFromCoordinatesAsync(_selectedLat, _selectedLon);
+        string cityName = await _weatherService.GetCityNameFromCoordinatesAsync(_selectedLat, _selectedLon);
 
         MyMap.Pins.Clear();
         if (!string.IsNullOrWhiteSpace(cityName))
@@ -105,7 +109,7 @@ public partial class AddLocationPage : ContentPage
         // Se l'utente ha scritto il nome senza usare la mappa (lat e lon sono 0), verifichiamo subito
         if (finalLat == 0 && finalLon == 0)
         {
-            var (apiName, lat, lon) = await _viewModel.GetCityInfoAsync(name);
+            var (apiName, lat, lon) = await _weatherService.GetCityInfoAsync(name);
 
             // Se la città non viene trovata
             if (string.IsNullOrEmpty(apiName))

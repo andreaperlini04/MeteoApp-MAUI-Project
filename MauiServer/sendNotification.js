@@ -17,8 +17,8 @@ console.log("Lunghezza Token: " + registrationToken.length + " caratteri");
 var message = {
     token: registrationToken,
     notification: {
-        title: "Test da Node.js",
-        body: "Se leggi questo, abbiamo vinto!"
+        title: "Server Node.js",
+        body: "Notifica Ricevuta"
     }
 };
 

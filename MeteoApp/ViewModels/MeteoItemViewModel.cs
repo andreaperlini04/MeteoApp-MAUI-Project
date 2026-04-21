@@ -1,11 +1,14 @@
 using System;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using MeteoApp.Core.Models;
+using MeteoApp.Core.Services;
 
 namespace MeteoApp
 {
     public class MeteoItemViewModel : BaseViewModel
     {
+        private readonly WeatherService _weatherService;
         private MeteoLocation _entry;
         public MeteoLocation MeteoLocation
         {
@@ -70,7 +73,12 @@ namespace MeteoApp
             }
         }
 
-        public MeteoItemViewModel(MeteoLocation entry)
+        public MeteoItemViewModel(WeatherService weatherService)
+        {
+            _weatherService = weatherService;
+        }
+
+        public void Initialize(MeteoLocation entry)
         {
             MeteoLocation = entry;
         }
@@ -80,61 +88,27 @@ namespace MeteoApp
             if (MeteoLocation == null || string.IsNullOrWhiteSpace(MeteoLocation.Name)) return;
 
             TemperatureText = "Caricamento...";
-            TemperatureMaxText = "Caricamento...";
-            TemperatureMinText = "Caricamento...";
+            TemperatureMaxText = "...";
+            TemperatureMinText = "...";
             Description = "Caricamento...";
             IconUrl = string.Empty;
 
-            string apiKey = Config.OpenWeatherApiKey;
-            string cityQuery = MeteoLocation.Name.TrimEnd().TrimStart().Replace(" ","+");
-            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityQuery}&appid={apiKey}&units=metric&lang=it";
+            var weather = await _weatherService.GetWeatherDetailsAsync(MeteoLocation.Name);
 
-            using HttpClient client = new HttpClient();
-            try
+            if (weather != null)
             {
-                var response = await client.GetFromJsonAsync<WeatherApiResponse>(url);
-                if (response != null && response.main != null)
-                {
-                    TemperatureText = $"{response.main.temp} °C";
-                    TemperatureMinText = $"{response.main.temp_min} °C";
-                    TemperatureMaxText = $"{response.main.temp_max} °C";
-                    
-                }
-
-                if (response.weather != null && response.weather.Length > 0)
-            {
-                string desc = response.weather[0].description;
-                Description = char.ToUpper(desc[0]) + desc.Substring(1); 
-                
-                
-                IconUrl = $"https://openweathermap.org/img/wn/{response.weather[0].icon}@4x.png";
+                TemperatureText = $"{Math.Round(weather.Temperature)} °C";
+                TemperatureMinText = $"{Math.Round(weather.TemperatureMin)} °C";
+                TemperatureMaxText = $"{Math.Round(weather.TemperatureMax)} °C";
+                Description = weather.Description;
+                IconUrl = weather.IconUrl;
             }
-            }
-            catch (Exception)
+            else
             {
                 TemperatureText = "Errore durante il recupero dei dati";
             }
         }
 
-        // Classi di supporto per deserializzare il JSON di OpenWeather (spostate qui)
-        public class WeatherApiResponse
-        {
-            public MainData main { get; set; }
-            public WeatherData[] weather { get; set; }
-        }
-
-        public class MainData
-        {
-            public float temp { get; set; }
-            public float temp_min { get; set; }
-            public float temp_max { get; set; }
-
-        }
-
-        public class WeatherData 
-        {
-            public string description { get; set; }
-            public string icon { get; set; }
-        }
+        
     }
 }

@@ -1,32 +1,30 @@
-﻿namespace MeteoApp;
+﻿using MeteoApp.Core.Models;
+
+namespace MeteoApp;
 
 [QueryProperty(nameof(MeteoLocation), "MeteoLocation")]
 public partial class MeteoItemPage : ContentPage
 {
-    private MeteoLocation _entry;
+    private readonly MeteoItemViewModel _viewModel;
+
     public MeteoLocation MeteoLocation
     {
-        get => _entry;
         set
         {
-            _entry = value;
-            BindingContext = new MeteoItemViewModel(_entry);
-            OnPropertyChanged();
+            _viewModel.Initialize(value);
         }
     }
 
-    public MeteoItemPage()
+    public MeteoItemPage(MeteoItemViewModel viewModel)
     {
         InitializeComponent();
+        _viewModel = viewModel;
+        BindingContext = _viewModel;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        
-        if (BindingContext is MeteoItemViewModel vm)
-        {
-            await vm.LoadWeatherDataAsync();
-        }
+        await _viewModel.LoadWeatherDataAsync();
     }
 }

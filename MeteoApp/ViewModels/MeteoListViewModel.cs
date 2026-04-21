@@ -1,12 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
+﻿using MeteoApp.Core.Services;
+using MeteoApp.Core.Models;
+using System.Collections.ObjectModel;
+using MeteoApp.Core.Data;
 
 namespace MeteoApp
 {
     public class MeteoListViewModel : BaseViewModel
     {
+        private readonly MeteoDatabase _database;
+        private readonly WeatherService _weatherService;
+
         ObservableCollection<MeteoLocation> _entries;
         public ObservableCollection<MeteoLocation> Entries
         {
@@ -20,16 +23,20 @@ namespace MeteoApp
 
         public ObservableCollection<MeteoLocation> CurrentLocationEntries { get; set; }
 
-        public MeteoListViewModel()
+        public MeteoListViewModel(MeteoDatabase database, WeatherService weatherService)
         {
+            _weatherService = weatherService;
+            _database = database;
+
+
             Entries = new ObservableCollection<MeteoLocation>();
             CurrentLocationEntries = new ObservableCollection<MeteoLocation>();
-            _ = LoadCitiesAsync();
+           
         }
 
         public async Task LoadCitiesAsync()
         {
-            var locations = await App.Database.GetLocationsAsync();
+            var locations = await _database.GetLocationsAsync();
 
             Entries.Clear();
             foreach (var location in locations)
@@ -50,20 +57,14 @@ namespace MeteoApp
 
                 if (gpsLocation == null) return;
 
-                string lat = gpsLocation.Latitude.ToString(CultureInfo.InvariantCulture);
-                string lon = gpsLocation.Longitude.ToString(CultureInfo.InvariantCulture);
-                string apiKey = Config.OpenWeatherApiKey;
-                string url = $"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={apiKey}&units=metric&lang=it";
+                string cityName = await _weatherService.GetCityNameFromCoordinatesAsync(gpsLocation.Latitude, gpsLocation.Longitude);
 
-                using HttpClient client = new HttpClient();
-                var response = await client.GetFromJsonAsync<LocationWeatherResponse>(url);
-
-                if (response != null && !string.IsNullOrWhiteSpace(response.name))
+                if (!string.IsNullOrWhiteSpace(cityName))
                 {
                     CurrentLocationEntries.Clear();
                     CurrentLocationEntries.Add(new MeteoLocation
                     {
-                        Name = response.name,
+                        Name = cityName,
                         Latitude = gpsLocation.Latitude,
                         Longitude = gpsLocation.Longitude
                     });
@@ -72,65 +73,25 @@ namespace MeteoApp
             catch (Exception)
             {
             }
-
         }
 
-        public async Task<(string Name, double Latitude, double Longitude)> GetCityInfoAsync(string cityName)
+
+        public async Task SaveNewLocationAsync(MeteoLocation location)
         {
-            string apiKey = Config.OpenWeatherApiKey;
-            string cityQuery = cityName.Trim().Replace(" ", "+");
-            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityQuery}&appid={apiKey}";
+            // 1. Salva nel database (usando l'istanza privata che abbiamo iniettato prima)
+            await _database.SaveLocationAsync(location);
 
-            using HttpClient client = new HttpClient();
-            try
-            {
-                var response = await client.GetFromJsonAsync<CityWeatherResponse>(url);
-                if (response?.coord != null && !string.IsNullOrWhiteSpace(response.name))
-                    return (response.name, response.coord.lat, response.coord.lon);
-            }
-            catch (Exception)
-            {
-                // errore (es. città non trovata, l'API restituisce 404).
-            }
-
-            return (null, 0, 0);
+            // 2. Ricarica la lista per far apparire subito la nuova città sullo schermo
+            await LoadCitiesAsync();
         }
 
-        public async Task<string> GetCityNameFromCoordinatesAsync(double lat, double lon)
+        public async Task DeleteLocationAsync(MeteoLocation location)
         {
-            string apiKey = Config.OpenWeatherApiKey;
-            string latStr = lat.ToString(CultureInfo.InvariantCulture);
-            string lonStr = lon.ToString(CultureInfo.InvariantCulture);
-            string url = $"https://api.openweathermap.org/data/2.5/weather?lat={latStr}&lon={lonStr}&appid={apiKey}";
+            // 1. Elimina dal database
+            await _database.DeleteLocationAsync(location);
 
-            using HttpClient client = new();
-            try
-            {
-                var response = await client.GetFromJsonAsync<LocationWeatherResponse>(url);
-                if (response != null && !string.IsNullOrWhiteSpace(response.name))
-                    return response.name;
-            }
-            catch (Exception)
-            {
-            }
-            return string.Empty;
-        }
-
-        private class LocationWeatherResponse
-        {
-            public string name { get; set; }
-        }
-
-        private class CityWeatherResponse
-        {
-            public string name { get; set; }
-            public CoordData coord { get; set; }
-        }
-
-        private class CoordData
-        {
-            public double lat { get; set; }
-            public double lon { get; set; }
+            // 2. Ricarica la lista per far sparire la città dallo schermo
+            await LoadCitiesAsync();
         }
     }
 }

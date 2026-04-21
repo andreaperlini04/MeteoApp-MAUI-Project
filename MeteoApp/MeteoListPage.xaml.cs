@@ -1,28 +1,34 @@
-﻿using Microsoft.Maui.ApplicationModel;
+﻿using MeteoApp.Core.Models;
+using MeteoApp.Core.Services;
 
 namespace MeteoApp;
 
 public partial class MeteoListPage : ContentPage
 {
     private bool _isRequestingLocationPermission;
+    private readonly MeteoListViewModel _viewModel;
     private bool _locationLoaded;
 
-    public MeteoListPage()
+    public MeteoListPage(MeteoListViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = new MeteoListViewModel();
+        _viewModel = viewModel;
+        BindingContext = _viewModel;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (_isRequestingLocationPermission) return;
+
+        await _viewModel.LoadCitiesAsync();
+
+        if (_isRequestingLocationPermission || _locationLoaded) return;
 
         _isRequestingLocationPermission = true;
 
         try
         {
-            await Task.Delay(500);
+            // Richiesta permessi in sicurezza
             var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
 
             if (status != PermissionStatus.Granted)
@@ -30,16 +36,14 @@ public partial class MeteoListPage : ContentPage
                 status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
             }
 
-            if (status == PermissionStatus.Granted && !_locationLoaded && BindingContext is MeteoListViewModel vm)
+            if (status == PermissionStatus.Granted)
             {
                 _locationLoaded = true;
-                await vm.LoadCurrentLocationAsync();
+                await _viewModel.LoadCurrentLocationAsync();
             }
         }
         catch (Exception ex)
         {
-            // Aggiungiamo questo blocco per catturare l'eccezione dei permessi!
-            // Così l'app non crasha, ma eviterà solo di caricare la posizione.
             Console.WriteLine($"Errore permessi: {ex.Message}");
         }
         finally
@@ -52,14 +56,26 @@ public partial class MeteoListPage : ContentPage
     {
         if (e.CurrentSelection.FirstOrDefault() is MeteoLocation location)
         {
-            var navigationParameter = new Dictionary<string, object>
-            {
-                { "MeteoLocation", location }
-            };
-            Shell.Current.GoToAsync($"entrydetails", navigationParameter);
-
+            NavigateToDetails(location);
             ((CollectionView)sender).SelectedItem = null;
         }
+    }
+
+    private void OnCurrentLocationTapped(object sender, TappedEventArgs e)
+    {
+        if (sender is View view && view.BindingContext is MeteoLocation location)
+        {
+            NavigateToDetails(location);
+        }
+    }
+
+    private void NavigateToDetails(MeteoLocation location)
+    {
+        var navigationParameter = new Dictionary<string, object>
+        {
+            { "MeteoLocation", location }
+        };
+        Shell.Current.GoToAsync($"entrydetails", navigationParameter);
     }
 
     private void OnItemAdded(object sender, EventArgs e)
@@ -69,31 +85,22 @@ public partial class MeteoListPage : ContentPage
 
     private async Task ShowAddLocationPage()
     {
-        if (BindingContext is not MeteoListViewModel vm) return;
-
         var tcs = new TaskCompletionSource<MeteoLocation>();
-        await Navigation.PushModalAsync(new NavigationPage(new AddLocationPage(vm, tcs)));
+        var weatherService = Handler.MauiContext.Services.GetService<WeatherService>();
+        await Navigation.PushModalAsync(new NavigationPage(new AddLocationPage(_viewModel, tcs, weatherService)));
+        
         var result = await tcs.Task;
-
-        // Se result è null significa che l'utente ha premuto "Annulla"
-        if (result == null) return;
-
-        // Arrivati a questo punto, sappiamo già che i dati in "result" sono validi
-        // perché il controllo API è stato fatto all'interno di AddLocationPage.
-        await App.Database.SaveLocationAsync(result);
-        vm.Entries.Add(result);
+        if (result != null)
+        {
+            await _viewModel.SaveNewLocationAsync(result);
+        }
     }
 
     private async void OnDeleteItemInvoked(object sender, EventArgs e)
     {
         if (sender is SwipeItemView swipeItem && swipeItem.CommandParameter is MeteoLocation location)
         {
-            await App.Database.DeleteLocationAsync(location);
-
-            if (BindingContext is MeteoListViewModel vm)
-            {
-                vm.Entries.Remove(location);
-            }
+            await _viewModel.DeleteLocationAsync(location);
         }
     }
 }

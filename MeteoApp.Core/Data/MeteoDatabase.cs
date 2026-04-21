@@ -1,6 +1,7 @@
+using MeteoApp.Core.Models;
 using SQLite;
 
-namespace MeteoApp
+namespace MeteoApp.Core.Data
 {
     public class MeteoDatabase
     {
