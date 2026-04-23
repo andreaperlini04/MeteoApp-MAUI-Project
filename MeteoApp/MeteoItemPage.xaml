@@ -1,69 +1,78 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:res="clr-namespace:MeteoApp.Resources.Strings;assembly=MeteoApp"
              x:Class="MeteoApp.MeteoItemPage"
-             Title="Dettagli">
-    
+             Title="{x:Static res:AppResources.MeteoItem_Title}">
+
     <ScrollView>
         <VerticalStackLayout Spacing="15" Padding="20,30,20,20" HorizontalOptions="Center">
-            
+
             <Label Text="{Binding MeteoLocation.Name}"
                    FontSize="40"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
-                   
+
             <Image Source="{Binding IconUrl}"
                    WidthRequest="180"
                    HeightRequest="180"
                    HorizontalOptions="Center"
                    Margin="0,-10,0,-20" />
-                   
+
             <Label Text="{Binding TemperatureText}"
                    FontSize="65"
                    FontAttributes="Bold"
                    TextColor="{StaticResource Primary}"
                    HorizontalOptions="Center" />
-                   
+
             <Label Text="{Binding Description}"
                    FontSize="22"
                    TextColor="{StaticResource Gray500}"
                    TextTransform="Uppercase"
-                   HorizontalOptions="Center" 
+                   HorizontalOptions="Center"
                    Margin="0,-10,0,10"/>
 
-            <Border Margin="0,20,0,0" 
-                    Padding="30,20" 
+            <Border Margin="0,20,0,0"
+                    Padding="30,20"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Gray900}}"
                     Stroke="Transparent"
                     HorizontalOptions="Center">
-                
+
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="20" />
                 </Border.StrokeShape>
-                
+
                 <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="50">
-                    
+
                     <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="5">
-                        <Label Text="Minima" FontSize="14" TextColor="{StaticResource Gray600}" HorizontalOptions="Center"/>
-                        <Label Text="{Binding TemperatureMinText}" 
-                               FontSize="24" 
-                               FontAttributes="Bold" 
-                               TextColor="{StaticResource Blue100Accent}" 
+                        <!-- "Minima" / "Min" localizzato -->
+                        <Label Text="{x:Static res:AppResources.MeteoItem_Min}"
+                               FontSize="14"
+                               TextColor="{StaticResource Gray600}"
+                               HorizontalOptions="Center"/>
+                        <Label Text="{Binding TemperatureMinText}"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Blue100Accent}"
                                HorizontalOptions="Center" />
                     </VerticalStackLayout>
-                    
+
                     <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="5">
-                        <Label Text="Massima" FontSize="14" TextColor="{StaticResource Gray600}" HorizontalOptions="Center"/>
-                        <Label Text="{Binding TemperatureMaxText}" 
-                               FontSize="24" 
-                               FontAttributes="Bold" 
-                               TextColor="{StaticResource Yellow100Accent}" 
+                        <!-- "Massima" / "Max" localizzato -->
+                        <Label Text="{x:Static res:AppResources.MeteoItem_Max}"
+                               FontSize="14"
+                               TextColor="{StaticResource Gray600}"
+                               HorizontalOptions="Center"/>
+                        <Label Text="{Binding TemperatureMaxText}"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Yellow100Accent}"
                                HorizontalOptions="Center" />
                     </VerticalStackLayout>
-                    
+
                 </Grid>
             </Border>
-            
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -1,4 +1,5 @@
 using MeteoApp.Core.Models;
+using MeteoApp.Resources.Strings;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using MeteoApp.Core.Services;
@@ -64,7 +65,6 @@ public partial class AddLocationPage : ContentPage
         _selectedLat = e.Location.Latitude;
         _selectedLon = e.Location.Longitude;
 
-        // Metti subito un pin provvisorio mentre aspetti OpenWeather
         MyMap.Pins.Clear();
         MyMap.Pins.Add(new Pin
         {
@@ -88,7 +88,12 @@ public partial class AddLocationPage : ContentPage
         }
         else
         {
-            MyMap.Pins.Add(new Pin { Label = "Posizione sconosciuta", Location = e.Location });
+            // Stringa localizzata per "Posizione sconosciuta"
+            MyMap.Pins.Add(new Pin
+            {
+                Label = AppResources.AddLocation_UnknownPlace,
+                Location = e.Location
+            });
         }
     }
 
@@ -97,8 +102,10 @@ public partial class AddLocationPage : ContentPage
         string name = CityEntry.Text?.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            // Nota: usa DisplayAlertAsync se ti dà l'avviso di obsolescenza
-            await DisplayAlertAsync("Errore", "Clicca sulla mappa o scrivi il nome di una città.", "OK");
+            await DisplayAlertAsync(
+                AppResources.AddLocation_ErrorTitle,
+                AppResources.AddLocation_ErrorEmptyCity,
+                AppResources.AddLocation_OK);
             return;
         }
 
@@ -106,25 +113,24 @@ public partial class AddLocationPage : ContentPage
         double finalLon = _selectedLon;
         string finalName = name;
 
-        // Se l'utente ha scritto il nome senza usare la mappa (lat e lon sono 0), verifichiamo subito
         if (finalLat == 0 && finalLon == 0)
         {
             var (apiName, lat, lon) = await _weatherService.GetCityInfoAsync(name);
 
-            // Se la città non viene trovata
             if (string.IsNullOrEmpty(apiName))
             {
-                await DisplayAlertAsync("Errore", "La città inserita non esiste o non è stata trovata. Riprova.", "OK");
-                return; // Interrompiamo l'esecuzione qui! La pagina NON si chiude.
+                await DisplayAlertAsync(
+                    AppResources.AddLocation_ErrorTitle,
+                    AppResources.AddLocation_ErrorCityNotFound,
+                    AppResources.AddLocation_OK);
+                return;
             }
 
-            // Se la città è valida, aggiorniamo i dati con quelli ufficiali di OpenWeather
             finalName = apiName;
             finalLat = lat;
             finalLon = lon;
         }
 
-        // Se siamo arrivati qui, la città è valida. Impostiamo il risultato e chiudiamo la modale.
         _tcs.SetResult(new MeteoLocation
         {
             Name = finalName,
@@ -144,7 +150,6 @@ public partial class AddLocationPage : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        // Gestisce il caso in cui l'utente chiude la pagina con il tasto back di Android
         if (!_tcs.Task.IsCompleted)
             _tcs.SetResult(null);
     }

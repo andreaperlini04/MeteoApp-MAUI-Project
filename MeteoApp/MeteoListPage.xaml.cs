@@ -1,4 +1,4 @@
-﻿using MeteoApp.Core.Models;
+using MeteoApp.Core.Models;
 using MeteoApp.Core.Services;
 
 namespace MeteoApp;
@@ -28,13 +28,10 @@ public partial class MeteoListPage : ContentPage
 
         try
         {
-            // Richiesta permessi in sicurezza
             var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
 
             if (status != PermissionStatus.Granted)
-            {
                 status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
-            }
 
             if (status == PermissionStatus.Granted)
             {
@@ -52,6 +49,11 @@ public partial class MeteoListPage : ContentPage
         }
     }
 
+    private void OnChangeLanguageClicked(object sender, EventArgs e)
+    {
+        App.LanguageService.ToggleLanguage();
+    }
+
     private void OnListItemSelected(object sender, SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection.FirstOrDefault() is MeteoLocation location)
@@ -64,9 +66,7 @@ public partial class MeteoListPage : ContentPage
     private void OnCurrentLocationTapped(object sender, TappedEventArgs e)
     {
         if (sender is View view && view.BindingContext is MeteoLocation location)
-        {
             NavigateToDetails(location);
-        }
     }
 
     private void NavigateToDetails(MeteoLocation location)
@@ -75,7 +75,7 @@ public partial class MeteoListPage : ContentPage
         {
             { "MeteoLocation", location }
         };
-        Shell.Current.GoToAsync($"entrydetails", navigationParameter);
+        Shell.Current.GoToAsync("entrydetails", navigationParameter);
     }
 
     private void OnItemAdded(object sender, EventArgs e)
@@ -88,19 +88,22 @@ public partial class MeteoListPage : ContentPage
         var tcs = new TaskCompletionSource<MeteoLocation>();
         var weatherService = Handler.MauiContext.Services.GetService<WeatherService>();
         await Navigation.PushModalAsync(new NavigationPage(new AddLocationPage(_viewModel, tcs, weatherService)));
-        
+
         var result = await tcs.Task;
         if (result != null)
-        {
             await _viewModel.SaveNewLocationAsync(result);
-        }
     }
 
     private async void OnDeleteItemInvoked(object sender, EventArgs e)
     {
         if (sender is SwipeItemView swipeItem && swipeItem.CommandParameter is MeteoLocation location)
-        {
             await _viewModel.DeleteLocationAsync(location);
-        }
+    }
+
+    private void OnShowTokenClicked(object sender, EventArgs e)
+    {
+        #if ANDROID
+            _ = MeteoApp.MainActivity.Instance?.FetchFcmToken();
+        #endif
     }
 }

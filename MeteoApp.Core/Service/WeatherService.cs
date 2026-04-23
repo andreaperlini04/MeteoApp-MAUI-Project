@@ -8,12 +8,14 @@ namespace MeteoApp.Core.Services
 {
     public class WeatherService
     {
+        private static string ApiLang =>CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         private readonly HttpClient _client;
 
         public WeatherService()
         {
             _client = new HttpClient();
         }
+
 
         public async Task<(string Name, double Latitude, double Longitude)> GetCityInfoAsync(string cityName)
         {
@@ -42,7 +44,7 @@ namespace MeteoApp.Core.Services
             string latStr = lat.ToString(CultureInfo.InvariantCulture);
             string lonStr = lon.ToString(CultureInfo.InvariantCulture);
             // Uso le stesse unità della tua altra chiamata
-            string url = $"https://api.openweathermap.org/data/2.5/weather?lat={latStr}&lon={lonStr}&appid={apiKey}&units=metric&lang=it";
+            string url = $"https://api.openweathermap.org/data/2.5/weather?lat={latStr}&lon={lonStr}&appid={apiKey}&units=metric&lang={ApiLang}";
 
             try
             {
@@ -76,7 +78,7 @@ namespace MeteoApp.Core.Services
         {
             string apiKey = Config.OpenWeatherApiKey;
             string cityQuery = cityName.Trim().Replace(" ", "+");
-            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityQuery}&appid={apiKey}&units=metric&lang=it";
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q={cityQuery}&appid={apiKey}&units=metric&lang={ApiLang}";
 
             try
             {

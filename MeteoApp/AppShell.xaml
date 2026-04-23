@@ -4,10 +4,11 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:MeteoApp"
-    Title="Meteo App">
+    xmlns:res="clr-namespace:MeteoApp.Resources.Strings;assembly=MeteoApp"
+    Title="{x:Static res:AppResources.AppShell_Title}">
 
     <TabBar>
-        <Tab Title="Home">
+        <Tab Title="{x:Static res:AppResources.AppShell_HomeTab}">
             <ShellContent ContentTemplate="{DataTemplate local:MeteoListPage}" />
         </Tab>
     </TabBar>

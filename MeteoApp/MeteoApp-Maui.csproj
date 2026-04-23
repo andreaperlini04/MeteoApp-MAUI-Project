@@ -89,6 +89,14 @@
 	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
    		<GoogleServicesJson Include="./Platforms/Android/google-services.json" />
 	</ItemGroup>
-	
-
+	<ItemGroup>
+	<EmbeddedResource Update="Resources\Strings\AppResources.resx">
+		<Generator>MSBuild:Compile</Generator>
+		<StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+		<StronglyTypedNamespace>MeteoApp.Resources.Strings</StronglyTypedNamespace>
+		<StronglyTypedFileName>Resources\Strings\AppResources.Designer.cs</StronglyTypedFileName>
+		<StronglyTypedClassName>AppResources</StronglyTypedClassName>
+	</EmbeddedResource>
+	</ItemGroup>
+  
 </Project>

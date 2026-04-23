@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- AddLocationPage -->
+  <data name="AddLocation_Title" xml:space="preserve">
+    <value>Add Location</value>
+  </data>
+  <data name="AddLocation_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AddLocation_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="AddLocation_Placeholder" xml:space="preserve">
+    <value>Tap the map or type a city name</value>
+  </data>
+  <data name="AddLocation_UnknownPlace" xml:space="preserve">
+    <value>Unknown location</value>
+  </data>
+  <data name="AddLocation_ErrorTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="AddLocation_ErrorEmptyCity" xml:space="preserve">
+    <value>Tap the map or type a city name.</value>
+  </data>
+  <data name="AddLocation_ErrorCityNotFound" xml:space="preserve">
+    <value>City not found or does not exist. Please try again.</value>
+  </data>
+  <data name="AddLocation_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+
+  <!-- AppShell -->
+  <data name="AppShell_Title" xml:space="preserve">
+    <value>Meteo App</value>
+  </data>
+  <data name="AppShell_HomeTab" xml:space="preserve">
+    <value>Home</value>
+  </data>
+
+  <!-- MeteoItemPage -->
+  <data name="MeteoItem_Title" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="MeteoItem_Min" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="MeteoItem_Max" xml:space="preserve">
+    <value>Max</value>
+  </data>
+
+  <!-- MeteoListPage -->
+  <data name="MeteoList_Title" xml:space="preserve">
+    <value>My Cities</value>
+  </data>
+  <data name="MeteoList_CurrentLocation" xml:space="preserve">
+    <value>Current Location</value>
+  </data>
+  <data name="MeteoList_SavedCities" xml:space="preserve">
+    <value>Saved Cities</value>
+  </data>
+  <data name="MeteoList_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="MeteoList_ChangeLanguage" xml:space="preserve">
+    <value>🌐 EN / IT</value>
+  </data>
+
+  <!-- WeatherData -->
+  <data name="Weather_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Weather_Error" xml:space="preserve">
+    <value>Error retrieving weather data</value>
+  </data>
+
+</root>

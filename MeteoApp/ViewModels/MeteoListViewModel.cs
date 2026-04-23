@@ -78,19 +78,15 @@ namespace MeteoApp
 
         public async Task SaveNewLocationAsync(MeteoLocation location)
         {
-            // 1. Salva nel database (usando l'istanza privata che abbiamo iniettato prima)
             await _database.SaveLocationAsync(location);
 
-            // 2. Ricarica la lista per far apparire subito la nuova città sullo schermo
             await LoadCitiesAsync();
         }
 
         public async Task DeleteLocationAsync(MeteoLocation location)
         {
-            // 1. Elimina dal database
             await _database.DeleteLocationAsync(location);
 
-            // 2. Ricarica la lista per far sparire la città dallo schermo
             await LoadCitiesAsync();
         }
     }

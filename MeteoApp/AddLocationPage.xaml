@@ -2,19 +2,20 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             xmlns:res="clr-namespace:MeteoApp.Resources.Strings;assembly=MeteoApp"
              x:Class="MeteoApp.AddLocationPage"
-             Title="Aggiungi Posizione">
+             Title="{x:Static res:AppResources.AddLocation_Title}">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Annulla" Clicked="OnCancel" />
-        <ToolbarItem Text="Salva" Clicked="OnSave" />
+        <ToolbarItem Text="{x:Static res:AppResources.AddLocation_Cancel}" Clicked="OnCancel" />
+        <ToolbarItem Text="{x:Static res:AppResources.AddLocation_Save}"   Clicked="OnSave" />
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto, *">
 
         <Entry Grid.Row="0"
                x:Name="CityEntry"
-               Placeholder="Clicca sulla mappa o scrivi il nome"
+               Placeholder="{x:Static res:AppResources.AddLocation_Placeholder}"
                TextChanged="OnCityEntryTextChanged"
                Margin="15,10" />
 

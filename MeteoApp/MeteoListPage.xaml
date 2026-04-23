@@ -1,18 +1,26 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:res="clr-namespace:MeteoApp.Resources.Strings;assembly=MeteoApp"
              x:Class="MeteoApp.MeteoListPage"
-             Title="Le mie Città">
+             Title="{x:Static res:AppResources.MeteoList_Title}">
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="🔔" Clicked="OnShowTokenClicked" />
+        <!-- Bottone cambio lingua -->
+        <ToolbarItem Text="{x:Static res:AppResources.MeteoList_ChangeLanguage}"
+                     Clicked="OnChangeLanguageClicked" />
+        <!-- Bottone aggiungi città -->
         <ToolbarItem Text="➕" Clicked="OnItemAdded" />
+        
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *">
 
-        <Label Grid.Row="0" 
-               Text="Posizione Attuale" 
-               FontSize="18" 
-               FontAttributes="Bold" 
+        <!-- Titolo sezione posizione attuale -->
+        <Label Grid.Row="0"
+               Text="{x:Static res:AppResources.MeteoList_CurrentLocation}"
+               FontSize="18"
+               FontAttributes="Bold"
                TextColor="{StaticResource Primary}"
                Margin="20,15,20,0" />
 
@@ -58,10 +66,11 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Label Grid.Row="2" 
-               Text="Città Salvate" 
-               FontSize="18" 
-               FontAttributes="Bold" 
+        <!-- Titolo sezione città salvate -->
+        <Label Grid.Row="2"
+               Text="{x:Static res:AppResources.MeteoList_SavedCities}"
+               FontSize="18"
+               FontAttributes="Bold"
                TextColor="{StaticResource Primary}"
                Margin="20,25,20,0" />
 
@@ -87,7 +96,8 @@
                                             <RoundRectangle CornerRadius="12" />
                                         </Border.StrokeShape>
 
-                                        <Label Text="Elimina"
+                                        <!-- "Elimina" / "Delete" localizzato -->
+                                        <Label Text="{x:Static res:AppResources.MeteoList_Delete}"
                                                TextColor="White"
                                                FontSize="16"
                                                FontAttributes="Bold"
@@ -97,7 +107,7 @@
                                 </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.RightItems>
-                        
+
                         <Border Margin="5,8"
                                 Padding="20"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
