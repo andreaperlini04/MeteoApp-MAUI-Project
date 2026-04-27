@@ -36,6 +36,9 @@ namespace MeteoApp
 
         public async Task LoadCitiesAsync()
         {
+
+            await _database.SyncWithAppwriteAsync();
+            
             var locations = await _database.GetLocationsAsync();
 
             Entries.Clear();
