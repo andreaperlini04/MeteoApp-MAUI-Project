@@ -6,12 +6,11 @@
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="🔔" Clicked="OnShowTokenClicked" />
-        <!-- Bottone cambio lingua -->
+        <ToolbarItem x:Name="ThemeButton" Text="☀️" Clicked="OnToggleThemeClicked" />
+        <ToolbarItem x:Name="UnitButton" Text="°C" Clicked="OnToggleUnitClicked" />
         <ToolbarItem Text="{x:Static res:AppResources.MeteoList_ChangeLanguage}"
                      Clicked="OnChangeLanguageClicked" />
-        <!-- Bottone aggiungi città -->
         <ToolbarItem Text="➕" Clicked="OnItemAdded" />
-        
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *">

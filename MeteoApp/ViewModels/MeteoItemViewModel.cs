@@ -67,6 +67,8 @@ namespace MeteoApp
             MeteoLocation = entry;
         }
 
+        private static double ToFahrenheit(double celsius) => celsius * 9.0 / 5.0 + 32;
+
         public async Task LoadWeatherDataAsync()
         {
             if (MeteoLocation == null || string.IsNullOrWhiteSpace(MeteoLocation.Name)) return;
@@ -82,9 +84,17 @@ namespace MeteoApp
 
             if (weather != null)
             {
-                TemperatureText    = $"{Math.Round(weather.Temperature)} °C";
-                TemperatureMinText = $"{Math.Round(weather.TemperatureMin)} °C";
-                TemperatureMaxText = $"{Math.Round(weather.TemperatureMax)} °C";
+                var settings = App.SettingsService.Load();
+                bool useFahrenheit = settings.TemperatureUnit == "fahrenheit";
+
+                double temp    = useFahrenheit ? ToFahrenheit(weather.Temperature)    : weather.Temperature;
+                double tempMin = useFahrenheit ? ToFahrenheit(weather.TemperatureMin) : weather.TemperatureMin;
+                double tempMax = useFahrenheit ? ToFahrenheit(weather.TemperatureMax) : weather.TemperatureMax;
+                string unit    = useFahrenheit ? "°F" : "°C";
+
+                TemperatureText    = $"{Math.Round(temp)} {unit}";
+                TemperatureMinText = $"{Math.Round(tempMin)} {unit}";
+                TemperatureMaxText = $"{Math.Round(tempMax)} {unit}";
                 Description        = weather.Description;
                 IconUrl            = weather.IconUrl;
             }

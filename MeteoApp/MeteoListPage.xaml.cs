@@ -20,6 +20,10 @@ public partial class MeteoListPage : ContentPage
     {
         base.OnAppearing();
 
+        var settings = App.SettingsService.Load();
+        ThemeButton.Text = settings.Theme == "dark" ? "🌙" : "☀️";
+        UnitButton.Text = settings.TemperatureUnit == "fahrenheit" ? "°F" : "°C";
+
         await _viewModel.LoadCitiesAsync();
 
         if (_isRequestingLocationPermission || _locationLoaded) return;
@@ -52,6 +56,26 @@ public partial class MeteoListPage : ContentPage
     private void OnChangeLanguageClicked(object sender, EventArgs e)
     {
         App.LanguageService.ToggleLanguage();
+        var settings = App.SettingsService.Load();
+        settings.Language = App.LanguageService.CurrentLanguageCode;
+        App.SettingsService.Save(settings);
+    }
+
+    private void OnToggleThemeClicked(object sender, EventArgs e)
+    {
+        var settings = App.SettingsService.Load();
+        settings.Theme = settings.Theme == "light" ? "dark" : "light";
+        App.SettingsService.Save(settings);
+        Application.Current.UserAppTheme = settings.Theme == "dark" ? AppTheme.Dark : AppTheme.Light;
+        ThemeButton.Text = settings.Theme == "dark" ? "🌙" : "☀️";
+    }
+
+    private void OnToggleUnitClicked(object sender, EventArgs e)
+    {
+        var settings = App.SettingsService.Load();
+        settings.TemperatureUnit = settings.TemperatureUnit == "celsius" ? "fahrenheit" : "celsius";
+        App.SettingsService.Save(settings);
+        UnitButton.Text = settings.TemperatureUnit == "fahrenheit" ? "°F" : "°C";
     }
 
     private void OnListItemSelected(object sender, SelectionChangedEventArgs e)

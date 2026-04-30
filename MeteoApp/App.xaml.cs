@@ -6,12 +6,18 @@ namespace MeteoApp;
 public partial class App : Application
 {
     public static readonly LanguageService LanguageService = new();
+    public static readonly SettingsService SettingsService = new();
 
     public App()
     {
         InitializeComponent();
 
-        // Assicura che i nuovi thread usino la stessa cultura UI.
+        var settings = SettingsService.Load();
+
+        LanguageService.SetLanguage(settings.Language);
+
+        UserAppTheme = settings.Theme == "dark" ? AppTheme.Dark : AppTheme.Light;
+
         CultureInfo.DefaultThreadCurrentCulture   = CultureInfo.CurrentCulture;
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.CurrentUICulture;
     }
