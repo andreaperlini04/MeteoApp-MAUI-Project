@@ -10,7 +10,7 @@ namespace MeteoApp.Core.Data
     {
         private SQLiteAsyncConnection _sqliteDatabase;
         private readonly Databases _appwriteDatabases;
-        
+
         private const string DatabaseId = Config.DatabaseId;
         private const string CollectionId = Config.CollectionId;
 
@@ -38,35 +38,35 @@ namespace MeteoApp.Core.Data
         public async Task<List<MeteoLocation>> GetLocationsAsync()
         {
             await InitSQLiteAsync();
-            return await _sqliteDatabase.Table<MeteoLocation>().ToListAsync(); 
+            return await _sqliteDatabase.Table<MeteoLocation>().ToListAsync();
         }
 
         public async Task<int> SaveLocationAsync(MeteoLocation item)
         {
             await InitSQLiteAsync();
-            
+
             int result;
             if (item.Id != 0)
                 result = await _sqliteDatabase.UpdateAsync(item);
             else
-                result = await _sqliteDatabase.InsertAsync(item); 
-                
-            _ = Task.Run(async () => 
+                result = await _sqliteDatabase.InsertAsync(item);
+
+            _ = Task.Run(async () =>
             {
-                try 
+                try
                 {
                     // Usa il nome della città per creare un ID univoco (es. "lugano")
-                    string docId = item.Name.Replace(" ", "").ToLower(); 
-                    
+                    string docId = item.Name.Replace(" ", "").ToLower();
+
                     // Inseriamo Nome, Latitudine e Longitudine
-                    var data = new Dictionary<string, object> 
-                    { 
+                    var data = new Dictionary<string, object>
+                    {
                         { "name", item.Name },
                         { "latitude", item.Latitude },
                         { "longitude", item.Longitude }
                     };
-                    
-                    try 
+
+                    try
                     {
                         await _appwriteDatabases.GetDocument(DatabaseId, CollectionId, docId);
                         // Se vuoi che aggiorni le coordinate esistenti puoi chiamare UpdateDocument qui
@@ -81,48 +81,61 @@ namespace MeteoApp.Core.Data
 
             return result;
         }
-        
+
         public async Task<int> DeleteLocationAsync(MeteoLocation item)
         {
             await InitSQLiteAsync();
-            
+
             int result = await _sqliteDatabase.DeleteAsync(item);
-            
-            _ = Task.Run(async () => 
+
+            _ = Task.Run(async () =>
             {
-                try 
+                try
                 {
                     string docId = item.Name.Replace(" ", "").ToLower();
                     await _appwriteDatabases.DeleteDocument(DatabaseId, CollectionId, docId);
                 }
                 catch { /* Ignora errori */ }
             });
-            
+
             return result;
         }
-        
+
         public async Task SyncWithAppwriteAsync()
         {
             await InitSQLiteAsync();
-            
+
             try
             {
                 var response = await _appwriteDatabases.ListDocuments(DatabaseId, CollectionId);
                 var localLocations = await GetLocationsAsync();
-                
+
+                foreach (var localLoc in localLocations)
+                {
+                    // Controlla se la città locale esiste ancora tra i documenti del cloud
+                    bool existsInCloud = response.Documents.Any(d =>
+                        d.Data["name"].ToString().Equals(localLoc.Name, StringComparison.OrdinalIgnoreCase));
+
+                    if (!existsInCloud)
+                    {
+                        // Se non esiste nel cloud, la eliminiamo dal database locale
+                        await _sqliteDatabase.DeleteAsync(localLoc);
+                    }
+                }
+
                 foreach (var doc in response.Documents)
                 {
                     // Leggiamo tutti i campi salvati su Appwrite
                     var cloudName = doc.Data["name"].ToString();
                     var cloudLat = Convert.ToDouble(doc.Data["latitude"]);
                     var cloudLon = Convert.ToDouble(doc.Data["longitude"]);
-                    
+
                     bool existsLocally = localLocations.Any(l => l.Name.Equals(cloudName, StringComparison.OrdinalIgnoreCase));
                     if (!existsLocally)
                     {
                         // Inseriamo l'oggetto completo con le coordinate nel DB locale
-                        await _sqliteDatabase.InsertAsync(new MeteoLocation 
-                        { 
+                        await _sqliteDatabase.InsertAsync(new MeteoLocation
+                        {
                             Name = cloudName,
                             Latitude = cloudLat,
                             Longitude = cloudLon
