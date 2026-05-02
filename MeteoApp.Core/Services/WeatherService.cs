@@ -3,12 +3,13 @@ using System.Globalization;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using MeteoApp.Core.Models;
+using System.Text.Json.Serialization;
 
 namespace MeteoApp.Core.Services
 {
     public class WeatherService
     {
-        private static string ApiLang =>CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        private static string ApiLang => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         private readonly HttpClient _client;
 
         public WeatherService()
@@ -103,26 +104,61 @@ namespace MeteoApp.Core.Services
             return null;
         }
 
-   
-        private class WeatherApiResponse
+        public async Task<List<(string Time, double Temp)>> GetForecastAsync(string cityName)
+        {
+
+            if (string.IsNullOrWhiteSpace(cityName)) return null;
+            
+            string apiKey = Config.OpenWeatherApiKey;
+            string cityQuery = cityName.Trim().Replace(" ", "+");
+            string url = $"https://api.openweathermap.org/data/2.5/forecast?q={cityQuery}&appid={apiKey}&units=metric&lang={ApiLang}";
+
+            try
+            {
+                var response = await _client.GetFromJsonAsync<ForecastResponse>(url);
+                if (response?.list != null)
+                {
+                    // Prendiamo le prime 8 previsioni (equivalenti alle prossime 24 ore a intervalli di 3 ore)
+                    return response.list.Take(8).Select(x => (
+                        Time: DateTimeOffset.FromUnixTimeSeconds(x.dt).ToLocalTime().ToString("HH:mm"),
+                        Temp: x.main.temp
+                    )).ToList();
+                }
+            }
+            catch { }
+            return null;
+        }
+
+
+        public class WeatherApiResponse
         {
             public MainData main { get; set; }
             public WeatherData[] weather { get; set; }
         }
 
-        private class MainData
+        public class MainData
         {
             public double temp { get; set; }
             public double temp_min { get; set; }
             public double temp_max { get; set; }
         }
 
-        private class WeatherData
+        public class WeatherData
         {
             public string description { get; set; }
             public string icon { get; set; }
         }
+        public class ForecastResponse
+        {
+            public List<ForecastItem> list { get; set; }
+        }
+        public class ForecastItem
+        {
+            public long dt { get; set; }
+            public MainData main { get; set; }
+        }
     }
+
 
 
 

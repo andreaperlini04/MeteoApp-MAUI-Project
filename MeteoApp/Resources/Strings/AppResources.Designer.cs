@@ -184,6 +184,15 @@ namespace MeteoApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View weather trend.
+        /// </summary>
+        internal static string MeteoItem_ViewForecast {
+            get {
+                return ResourceManager.GetString("MeteoItem_ViewForecast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 🌐 EN / IT.
         /// </summary>
         internal static string MeteoList_ChangeLanguage {

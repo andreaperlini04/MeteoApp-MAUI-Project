@@ -85,5 +85,8 @@
   <data name="Weather_Error" xml:space="preserve">
     <value>Error retrieving weather data</value>
   </data>
+  <data name="MeteoItem_ViewForecast" xml:space="preserve">
+    <value>View weather trend</value>
+  </data>
 
 </root>

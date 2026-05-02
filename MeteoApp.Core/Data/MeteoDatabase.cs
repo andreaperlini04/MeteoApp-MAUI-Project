@@ -88,15 +88,12 @@ namespace MeteoApp.Core.Data
 
             int result = await _sqliteDatabase.DeleteAsync(item);
 
-            _ = Task.Run(async () =>
+            try
             {
-                try
-                {
-                    string docId = item.Name.Replace(" ", "").ToLower();
-                    await _appwriteDatabases.DeleteDocument(DatabaseId, CollectionId, docId);
-                }
-                catch { /* Ignora errori */ }
-            });
+                string docId = item.Name.Replace(" ", "").ToLower();
+                await _appwriteDatabases.DeleteDocument(DatabaseId, CollectionId, docId);
+            }
+            catch { /* Ignora errori */ }
 
             return result;
         }
@@ -109,19 +106,6 @@ namespace MeteoApp.Core.Data
             {
                 var response = await _appwriteDatabases.ListDocuments(DatabaseId, CollectionId);
                 var localLocations = await GetLocationsAsync();
-
-                foreach (var localLoc in localLocations)
-                {
-                    // Controlla se la città locale esiste ancora tra i documenti del cloud
-                    bool existsInCloud = response.Documents.Any(d =>
-                        d.Data["name"].ToString().Equals(localLoc.Name, StringComparison.OrdinalIgnoreCase));
-
-                    if (!existsInCloud)
-                    {
-                        // Se non esiste nel cloud, la eliminiamo dal database locale
-                        await _sqliteDatabase.DeleteAsync(localLoc);
-                    }
-                }
 
                 foreach (var doc in response.Documents)
                 {

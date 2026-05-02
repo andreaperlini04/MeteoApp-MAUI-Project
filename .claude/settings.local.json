@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\andre\\\\Documents\\\\uni\\\\sviluppo_mobile\\\\MeteoApp-MAUI-Project\")",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\andre\\\\Documents\\\\uni\\\\sviluppo_mobile\\\\MeteoApp-MAUI-Project\\\\MeteoApp\" -Recurse -Filter \"*.xaml\" -o Name)"
+    ]
+  }
+}

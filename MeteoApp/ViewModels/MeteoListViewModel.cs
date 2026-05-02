@@ -81,8 +81,8 @@ namespace MeteoApp
 
         public async Task SaveNewLocationAsync(MeteoLocation location)
         {
+            Entries.Add(location);
             await _database.SaveLocationAsync(location);
-
             await LoadCitiesAsync();
         }
 

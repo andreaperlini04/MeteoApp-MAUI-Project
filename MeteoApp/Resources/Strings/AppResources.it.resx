@@ -85,5 +85,9 @@
   <data name="Weather_Error" xml:space="preserve">
     <value>Errore durante il recupero dei dati</value>
   </data>
+  <data name="MeteoItem_ViewForecast" xml:space="preserve">
+    <value>Vedi Andamento Termico</value>
+  </data>
+
 
 </root>
