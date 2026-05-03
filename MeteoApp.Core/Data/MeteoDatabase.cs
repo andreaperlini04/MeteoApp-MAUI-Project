@@ -51,33 +51,27 @@ namespace MeteoApp.Core.Data
             else
                 result = await _sqliteDatabase.InsertAsync(item);
 
-            _ = Task.Run(async () =>
+            try
             {
+                string docId = item.Name.Replace(" ", "").ToLower();
+
+                var data = new Dictionary<string, object>
+                {
+                    { "name", item.Name },
+                    { "latitude", item.Latitude },
+                    { "longitude", item.Longitude }
+                };
+
                 try
                 {
-                    // Usa il nome della città per creare un ID univoco (es. "lugano")
-                    string docId = item.Name.Replace(" ", "").ToLower();
-
-                    // Inseriamo Nome, Latitudine e Longitudine
-                    var data = new Dictionary<string, object>
-                    {
-                        { "name", item.Name },
-                        { "latitude", item.Latitude },
-                        { "longitude", item.Longitude }
-                    };
-
-                    try
-                    {
-                        await _appwriteDatabases.GetDocument(DatabaseId, CollectionId, docId);
-                        // Se vuoi che aggiorni le coordinate esistenti puoi chiamare UpdateDocument qui
-                    }
-                    catch
-                    {
-                        await _appwriteDatabases.CreateDocument(DatabaseId, CollectionId, docId, data);
-                    }
+                    await _appwriteDatabases.GetDocument(DatabaseId, CollectionId, docId);
                 }
-                catch { /* Ignora errori di connessione */ }
-            });
+                catch
+                {
+                    await _appwriteDatabases.CreateDocument(DatabaseId, CollectionId, docId, data);
+                }
+            }
+            catch { }
 
             return result;
         }
@@ -107,6 +101,10 @@ namespace MeteoApp.Core.Data
                 var response = await _appwriteDatabases.ListDocuments(DatabaseId, CollectionId);
                 var localLocations = await GetLocationsAsync();
 
+                var cloudNames = new HashSet<string>(
+                    response.Documents.Select(d => d.Data["name"].ToString()),
+                    StringComparer.OrdinalIgnoreCase);
+
                 foreach (var doc in response.Documents)
                 {
                     // Leggiamo tutti i campi salvati su Appwrite
@@ -126,10 +124,17 @@ namespace MeteoApp.Core.Data
                         });
                     }
                 }
+
+                foreach (var local in localLocations)
+                {
+                    if (!cloudNames.Contains(local.Name))
+                    {
+                        await _sqliteDatabase.DeleteAsync(local);
+                    }
+                }
             }
             catch
             {
-                // Gestione silenziosa in caso di mancanza di rete
             }
         }
     }

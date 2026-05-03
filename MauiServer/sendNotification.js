@@ -6,7 +6,7 @@ admin.initializeApp({
 });
 
 // INCOLLA QUI IL TOKEN PRESO DALLA CONSOLE WEB DI FIREBASE
-var registrationToken = "dXdSH-9vTaa1IuWphEB5j1:APA91bGu827VosPXhLu6EFypUHQxXbvlFPphVSjHBDcFdy7FZk-PD8swey9ftuxXUJBAKO4_8Uz5_ObYtplJzcJeDQdHjRkWjKckMM3WU8W1NY41cHJBNQA";
+var registrationToken = "cR99GtfmSCak8GED5giGNX:APA91bFSKZrPt-g8R3tRDi3AXGTXnxMtMlJ1H7SlZwx7P9VhVOLNQr6cThurkFbtHrmjS80VqfDOCoe6T8Dlc6TJ2LkiUVpmqFWuVPB222d_Vaxao9-wjS0";
 
 // Rimuove eventuali spazi o a capo invisibili copiati per sbaglio!
 registrationToken = registrationToken.trim(); 
