@@ -1,12 +1,16 @@
 using System;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
+using MeteoApp.Core.Models;
+using MeteoApp.Core.Services;
+using MeteoApp.Resources.Strings;
 
 namespace MeteoApp
 {
     public class MeteoItemViewModel : BaseViewModel
     {
+        private readonly WeatherService _weatherService;
         private MeteoLocation _entry;
+
         public MeteoLocation MeteoLocation
         {
             get => _entry;
@@ -21,119 +25,83 @@ namespace MeteoApp
         private string _temperatureMinText;
         private string _temperatureMaxText;
         private string _description;
-
         private string _iconUrl;
+
         public string IconUrl
         {
             get => _iconUrl;
-            set
-            {
-                _iconUrl = value;
-                OnPropertyChanged();
-            }
+            set { _iconUrl = value; OnPropertyChanged(); }
         }
+
         public string TemperatureText
         {
             get => _temperatureText;
-            set
-            {
-                _temperatureText = value;
-                OnPropertyChanged();
-            }
+            set { _temperatureText = value; OnPropertyChanged(); }
         }
 
         public string TemperatureMinText
         {
             get => _temperatureMinText;
-            set
-            {
-                _temperatureMinText = value;
-                OnPropertyChanged();
-            }
+            set { _temperatureMinText = value; OnPropertyChanged(); }
         }
+
         public string TemperatureMaxText
         {
             get => _temperatureMaxText;
-            set
-            {
-                _temperatureMaxText = value;
-                OnPropertyChanged();
-            }
+            set { _temperatureMaxText = value; OnPropertyChanged(); }
         }
+
         public string Description
         {
             get => _description;
-            set
-            {
-                _description = value;
-                OnPropertyChanged();
-            }
+            set { _description = value; OnPropertyChanged(); }
         }
 
-        public MeteoItemViewModel(MeteoLocation entry)
+        public MeteoItemViewModel(WeatherService weatherService)
+        {
+            _weatherService = weatherService;
+        }
+
+        public void Initialize(MeteoLocation entry)
         {
             MeteoLocation = entry;
         }
+
+        private static double ToFahrenheit(double celsius) => celsius * 9.0 / 5.0 + 32;
 
         public async Task LoadWeatherDataAsync()
         {
             if (MeteoLocation == null || string.IsNullOrWhiteSpace(MeteoLocation.Name)) return;
 
-            TemperatureText = "Caricamento...";
-            TemperatureMaxText = "Caricamento...";
-            TemperatureMinText = "Caricamento...";
-            Description = "Caricamento...";
-            IconUrl = string.Empty;
+            // Testi di "caricamento" localizzati
+            TemperatureText    = AppResources.Weather_Loading;
+            TemperatureMaxText = "...";
+            TemperatureMinText = "...";
+            Description        = AppResources.Weather_Loading;
+            IconUrl            = string.Empty;
 
-            string apiKey = Config.OpenWeatherApiKey;
-            string url = $"https://api.openweathermap.org/data/2.5/weather?q={MeteoLocation.Name}&appid={apiKey}&units=metric&lang=it";
+            var weather = await _weatherService.GetWeatherDetailsAsync(MeteoLocation.Name);
 
-            using HttpClient client = new HttpClient();
-            try
+            if (weather != null)
             {
-                var response = await client.GetFromJsonAsync<WeatherApiResponse>(url);
-                if (response != null && response.main != null)
-                {
-                    TemperatureText = $"{response.main.temp} °C";
-                    TemperatureMinText = $"{response.main.temp_min} °C";
-                    TemperatureMaxText = $"{response.main.temp_max} °C";
-                    
-                }
+                var settings = App.SettingsService.Load();
+                bool useFahrenheit = settings.TemperatureUnit == "fahrenheit";
 
-                if (response.weather != null && response.weather.Length > 0)
+                double temp    = useFahrenheit ? ToFahrenheit(weather.Temperature)    : weather.Temperature;
+                double tempMin = useFahrenheit ? ToFahrenheit(weather.TemperatureMin) : weather.TemperatureMin;
+                double tempMax = useFahrenheit ? ToFahrenheit(weather.TemperatureMax) : weather.TemperatureMax;
+                string unit    = useFahrenheit ? "°F" : "°C";
+
+                TemperatureText    = $"{Math.Round(temp)} {unit}";
+                TemperatureMinText = $"{Math.Round(tempMin)} {unit}";
+                TemperatureMaxText = $"{Math.Round(tempMax)} {unit}";
+                Description        = weather.Description;
+                IconUrl            = weather.IconUrl;
+            }
+            else
             {
-                string desc = response.weather[0].description;
-                Description = char.ToUpper(desc[0]) + desc.Substring(1); 
-                
-                
-                IconUrl = $"https://openweathermap.org/img/wn/{response.weather[0].icon}@4x.png";
+                TemperatureText = AppResources.Weather_Error;
             }
-            }
-            catch (Exception)
-            {
-                TemperatureText = "Errore durante il recupero dei dati";
-            }
-        }
-
-        // Classi di supporto per deserializzare il JSON di OpenWeather (spostate qui)
-        public class WeatherApiResponse
-        {
-            public MainData main { get; set; }
-            public WeatherData[] weather { get; set; }
-        }
-
-        public class MainData
-        {
-            public float temp { get; set; }
-            public float temp_min { get; set; }
-            public float temp_max { get; set; }
-
-        }
-
-        public class WeatherData 
-        {
-            public string description { get; set; }
-            public string icon { get; set; }
         }
     }
 }

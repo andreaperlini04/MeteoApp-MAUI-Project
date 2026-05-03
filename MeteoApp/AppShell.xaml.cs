@@ -13,6 +13,7 @@ public partial class AppShell : Shell
 	private void RegisterRoutes()
     {
         Routes.Add("entrydetails", typeof(MeteoItemPage));
+		Routes.Add("forecast", typeof(ForecastPage));
 
         foreach (var item in Routes)
             Routing.RegisterRoute(item.Key, item.Value);

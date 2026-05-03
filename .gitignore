@@ -398,4 +398,11 @@ FodyWeavers.xsd
 *.sln.iml
 .DS_Store
 
-MeteoApp/Config.cs
+# Ignora le chiavi API locali
+MeteoApp.Core/Config.cs
+
+MeteoApp/Platforms/Android/google-services.json
+
+# Se la cartella del server Node.js è dentro il progetto:
+MeteoApp/Platforms/Android/Resources/values/strings.xml
+MauiServer/serviceAccountKey.json

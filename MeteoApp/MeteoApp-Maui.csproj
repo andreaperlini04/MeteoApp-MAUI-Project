@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0-android</TargetFrameworks>
@@ -22,7 +22,7 @@
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">17.2</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
 		<AssemblyName>MeteoApp</AssemblyName>
 	</PropertyGroup>
 
@@ -49,7 +49,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Appwrite" Version="0.11.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="Plugin.Firebase" Version="4.2.1" />
+		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="$(MauiVersion)" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -82,4 +87,20 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\MeteoApp.Core\MeteoApp.Core.csproj" />
 	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
+   		<GoogleServicesJson Include="./Platforms/Android/google-services.json" />
+	</ItemGroup>
+	<ItemGroup>
+	<EmbeddedResource Update="Resources\Strings\AppResources.resx">
+		<Generator>MSBuild:Compile</Generator>
+		<StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+		<StronglyTypedNamespace>MeteoApp.Resources.Strings</StronglyTypedNamespace>
+		<StronglyTypedFileName>Resources\Strings\AppResources.Designer.cs</StronglyTypedFileName>
+		<StronglyTypedClassName>AppResources</StronglyTypedClassName>
+	</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+    <MauiAsset Include="wwwroot\**" />
+	</ItemGroup>
+  
 </Project>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "719448805173",
+    "project_id": "meteoapp-maui-a3f1a",
+    "storage_bucket": "meteoapp-maui-a3f1a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719448805173:android:b3ea222045f350d759067c",
+        "android_client_info": {
+          "package_name": "com.companyname.meteoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "YOUR_KEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

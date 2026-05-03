@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MeteoApp Blazor</title>
+    <base href="/" />
+</head>
+<body>
+    <div id="app">Caricamento grafico...</div>
+
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script>
+        window.BlazorWebView.startBlazorIfNotAlreadyStarted();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+
+    <script>
+        window.renderWeatherChart = async (canvasId, labels, dataTemps) => {
+            let attempts = 0;
+            while (typeof Chart === 'undefined' && attempts < 50) {
+                await new Promise(r => setTimeout(r, 100));
+                attempts++;
+            }
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js non disponibile');
+                return;
+            }
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperatura (°C)',
+                        data: dataTemps,
+                        borderColor: '#0EA5E9',
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        };
+    </script>
+</body>
+</html>

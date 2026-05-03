@@ -1,0 +1,92 @@
+@using MeteoApp.Core.Services
+@inject WeatherService WeatherSvc
+@inject IJSRuntime JS
+@inject ForecastStateService StateService
+@implements IDisposable
+
+<div style="padding: 20px; font-family: sans-serif;">
+    <h3 style="color: #0284C7;">Andamento per @StateService.CityName</h3>
+
+    @if (isLoading)
+    {
+        <p>Scarico i dati meteo da OpenWeather...</p>
+    }
+    else if (errorMessage != null)
+    {
+        <p style="color: red; font-weight: bold;">Errore: @errorMessage</p>
+    }
+    else if (forecasts == null || !forecasts.Any())
+    {
+        <p>Nessuna previsione trovata per la città selezionata.</p>
+    }
+    else
+    {
+        <div style="position: relative; height:400px; width:100%">
+            <canvas id="weatherChart"></canvas>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private string errorMessage = null;
+    private List<(string Time, double Temp)> forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        StateService.OnCityNameChanged += HandleCityChanged;
+        if (!string.IsNullOrWhiteSpace(StateService.CityName))
+            await LoadDataAsync(StateService.CityName);
+        else
+            isLoading = false;
+    }
+
+    private async void HandleCityChanged()
+    {
+        await InvokeAsync(async () =>
+        {
+            await LoadDataAsync(StateService.CityName);
+            StateHasChanged();
+        });
+    }
+
+    private async Task LoadDataAsync(string cityName)
+    {
+        isLoading = true;
+        errorMessage = null;
+        forecasts = null;
+        StateHasChanged();
+        try
+        {
+            forecasts = await WeatherSvc.GetForecastAsync(cityName);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Impossibile scaricare i dati: " + ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!isLoading && forecasts != null && forecasts.Any() && errorMessage == null)
+        {
+            try
+            {
+                var labels = forecasts.Select(f => f.Time).ToArray();
+                var temps  = forecasts.Select(f => f.Temp).ToArray();
+                await JS.InvokeVoidAsync("renderWeatherChart", "weatherChart", labels, temps);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Errore durante il disegno del grafico: " + ex.Message);
+            }
+        }
+    }
+
+    public void Dispose() => StateService.OnCityNameChanged -= HandleCityChanged;
+}
