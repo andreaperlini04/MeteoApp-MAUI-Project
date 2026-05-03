@@ -19,21 +19,27 @@ namespace MeteoApp
             HandleIntent(Intent);
             CreateNotificationChannelIfNeeded();
 
-            RequestNotificationPermission();
-            
+            RequestStartupPermissions();
+
             // ATTIVARE PER AVERE TOKEN DISPOSITIVO PER RICEVERE NOTIFICHE
             //_ = FetchFcmToken();
         }
 
-        private void RequestNotificationPermission()
+        private void RequestStartupPermissions()
         {
+            var permissions = new System.Collections.Generic.List<string>();
+
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu)
             {
                 if (CheckSelfPermission(Android.Manifest.Permission.PostNotifications) != Permission.Granted)
-                {
-                    RequestPermissions(new[] { Android.Manifest.Permission.PostNotifications }, 0);
-                }
+                    permissions.Add(Android.Manifest.Permission.PostNotifications);
             }
+
+            if (CheckSelfPermission(Android.Manifest.Permission.AccessFineLocation) != Permission.Granted)
+                permissions.Add(Android.Manifest.Permission.AccessFineLocation);
+
+            if (permissions.Count > 0)
+                RequestPermissions(permissions.ToArray(), 0);
         }
 
         public async Task FetchFcmToken()
